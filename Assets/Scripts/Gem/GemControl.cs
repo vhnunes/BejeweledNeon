@@ -1,4 +1,7 @@
-﻿namespace BJW
+﻿using System;
+using UnityEngine;
+
+namespace BJW
 {
     public class GemControl
     {
@@ -67,7 +70,19 @@
 
         private bool CanSwitchGems()
         {
-            return true;
+            var firstGemPosition = _firstSelectedGem.boardPosition;
+            var secondGemPosition = _secondSelectedGem.boardPosition;
+
+            var xDistance = Mathf.Abs(secondGemPosition.x - firstGemPosition.x);
+            var yDistance = Math.Abs(secondGemPosition.y - firstGemPosition.y);
+
+            if (xDistance == 1f && yDistance == 0)
+                return true;
+            
+            else if (yDistance == 1f && xDistance == 0)
+                return true;
+
+            return false;
         }
         
         private bool CanInteractWithGem()
