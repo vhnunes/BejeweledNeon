@@ -12,6 +12,7 @@ namespace BJW
 
         private GemData[] _gemsDataAvaliable;
         private Gem[] _gemsInGame;
+        private List<GemMatch> _gemMatches = new List<GemMatch>();
 
         #region Properties
 
@@ -36,7 +37,6 @@ namespace BJW
             InitializeGems();
             PlaceGemsOnBoard();
         }
-
         public void ChangeBoardState(BoardState newState)
         {
             _boardState = newState;
@@ -68,7 +68,138 @@ namespace BJW
             }
         }
 
+        private Gem GetGemInPosition(Vector2 boardPosition)
+        {
+            foreach (var gem in _gemsInGame)
+            {
+                if (gem.boardPosition == boardPosition)
+                    return gem;
+            }
+            
+            // If erro
+            Debug.LogError($"Cannot find gem in board on {boardPosition}");
+            return null;
+        }
+
         #endregion
+        
+        public void CheckForMatchsInGem(Gem gem)
+        {
+            GemMatch horizontalMatch = HorizontalMatcsOfGem(gem);
+            GemMatch verticalMatch = VerticalMatchOfGem(gem);
+
+            if (horizontalMatch.IsMatch())
+            {
+                // TODO: ON MATCH
+                Debug.Log("Horizontal MATCH!!!");
+            }
+
+            if (verticalMatch.IsMatch())
+            {
+                // TODO: ON MATCH
+                Debug.Log("Vertical MATCH!!!");
+            }
+        }
+
+        private GemMatch HorizontalMatcsOfGem(Gem gem)
+        {
+            GemMatch match = new GemMatch();
+            
+            Vector2 nextGemPosition;
+            Gem nextGem = null;
+
+            // Right
+            nextGemPosition = gem.boardPosition + Vector2.right;
+            while (CanCheckPosition(nextGemPosition))
+            {
+                nextGem = GetGemInPosition(nextGemPosition);
+
+                if (nextGem.gemColor == gem.gemColor)
+                {
+                    match.AddGem(nextGem);
+                    nextGemPosition += Vector2.right;
+                }
+                
+                else
+                    break;
+            }
+            
+            // Left
+            nextGemPosition = gem.boardPosition + Vector2.left;
+            while (CanCheckPosition(nextGemPosition))
+            {
+                nextGem = GetGemInPosition(nextGemPosition);
+
+                if (nextGem.gemColor == gem.gemColor)
+                {
+                    match.AddGem(nextGem);
+                    nextGemPosition += Vector2.left;
+                }
+
+                else
+                    break;
+            }
+            
+            return match;
+        }
+        private GemMatch VerticalMatchOfGem(Gem gem)
+        {
+            GemMatch match = new GemMatch();
+
+            Vector2 nextGemPosition;
+            Gem nextGem = null;
+
+            // Up
+            nextGemPosition = gem.boardPosition + Vector2.up;
+            while (CanCheckPosition(nextGemPosition))
+            {
+                nextGem = GetGemInPosition(nextGemPosition);
+
+                if (nextGem.gemColor == gem.gemColor)
+                {
+                    match.AddGem(nextGem);
+                    nextGemPosition += Vector2.up;
+                }
+
+                else
+                    break;
+            }
+            
+            // Down
+            nextGemPosition = gem.boardPosition + Vector2.down;
+            while (CanCheckPosition(nextGemPosition))
+            {
+                nextGem = GetGemInPosition(nextGemPosition);
+
+                if (nextGem.gemColor == gem.gemColor)
+                {
+                    match.AddGem(nextGem);
+                    nextGemPosition += Vector2.down;
+                }
+
+                else
+                    break;
+            }
+            
+            return match;
+        }
+        
+        private bool CanCheckPosition(Vector2 boardPosition)
+        {
+            if (boardPosition.x >= _rowSize)
+                return false;
+            
+            else if (boardPosition.x < 0)
+                return false;
+            
+            else if (boardPosition.y < 0)
+                return false;
+            
+            else if (boardPosition.y >= _collumSize)
+                return false;
+                
+            return true;
+        }
 
         #endregion
         

@@ -9,12 +9,15 @@ namespace BJW
 
         private GemType _gemType;
         private GemState _gemState;
+        private Color _gemColor;
         private Vector2 _boardPosition = new Vector2();
 
         #region Properties
 
-        public Vector2 boardPosition => _boardPosition;
+        public GemType gemType => _gemType;
         public GemState gemState => _gemState;
+        public Color gemColor => _gemColor;
+        public Vector2 boardPosition => _boardPosition;
 
         #endregion
         
@@ -41,6 +44,7 @@ namespace BJW
         {
             _gemData = gemData;
             _gemType = gemData.gemType;
+            _gemColor = gemData.gemColor;
             
             CreateView();
         }

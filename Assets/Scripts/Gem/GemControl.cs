@@ -42,23 +42,27 @@ namespace BJW
             else if (_board.boardState == BoardState.GemSelected)
             {
                 _secondSelectedGem = gem;
-                
+
                 if (CanSwitchGems())
-                    TrySwitchGems();
+                {
+                    SwitchGems();
+                    // TODO: Gem.OnSwitch()
+                    _board.CheckForMatchsInGem(_firstSelectedGem);
+                    _board.CheckForMatchsInGem(_secondSelectedGem);
+                    UnselectAllGems();
+                }
                 else
                     UnselectAllGems();
             }
         }
 
-        private void TrySwitchGems()
+        private void SwitchGems()
         {
             var firstGemPosition = _firstSelectedGem.boardPosition;
             var secondGemPosition = _secondSelectedGem.boardPosition;
             
             _firstSelectedGem.SetBoardPosition(secondGemPosition);
             _secondSelectedGem.SetBoardPosition(firstGemPosition);
-            
-            UnselectAllGems();
         }
 
         private void UnselectAllGems()
@@ -73,13 +77,13 @@ namespace BJW
             var firstGemPosition = _firstSelectedGem.boardPosition;
             var secondGemPosition = _secondSelectedGem.boardPosition;
 
-            var xDistance = Mathf.Abs(secondGemPosition.x - firstGemPosition.x);
-            var yDistance = Math.Abs(secondGemPosition.y - firstGemPosition.y);
+            var xDistance = (int) Mathf.Abs(secondGemPosition.x - firstGemPosition.x);
+            var yDistance = (int) Math.Abs(secondGemPosition.y - firstGemPosition.y);
 
-            if (xDistance == 1f && yDistance == 0)
+            if (xDistance == 1 && yDistance == 0)
                 return true;
             
-            else if (yDistance == 1f && xDistance == 0)
+            else if (yDistance == 1 && xDistance == 0)
                 return true;
 
             return false;
