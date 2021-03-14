@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70f5c13e386b403da73663de9e8c825f, type: 3}
+  m_Name: Neon Collection
+  m_EditorClassIdentifier: 
+  _gemDatas:
+  - {fileID: 11400000, guid: 2e34c924cf17bed45b50026906b5b17b, type: 2}
+  - {fileID: 11400000, guid: 32039b37d742196479da50d975327588, type: 2}
+  - {fileID: 11400000, guid: c0f04689b6dd3ad4ca48d00a216d9166, type: 2}
+  - {fileID: 11400000, guid: d6f89d6aa09af8b45894001c283c3504, type: 2}
+  - {fileID: 11400000, guid: 12e1fe31216f1704e99549075cf0d52c, type: 2}
+  - {fileID: 11400000, guid: dcae1843a721785478d5541f11766afa, type: 2}
+  - {fileID: 11400000, guid: ba134d37791721447935cceb9226f557, type: 2}
