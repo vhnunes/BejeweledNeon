@@ -2,6 +2,6 @@
 {
     public enum BoardState
     {
-        Waiting, Playing
+        Waiting, Playing, GemSelected
     }
 }
