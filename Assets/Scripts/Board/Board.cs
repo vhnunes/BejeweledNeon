@@ -9,20 +9,22 @@ namespace BJW
 
         private int _rowSize, _collumSize;
 
-        private Gem[] _gems;
-        private Dictionary<Gem, Vector2> _gemsPosition = new Dictionary<Gem, Vector2>();
+        private GemData[] _gemsDataAvaliable;
+        private Gem[] _gemsInGame;
 
         #endregion
 
         #region Methods
         
         // Constructor
-        public Board(int rowSize, int collumSize)
+        public Board(int rowSize, int collumSize, GemData[] gemsDataToUseInGame)
         {
             _rowSize = rowSize;
             _collumSize = collumSize;
-            _gems = new Gem[rowSize * collumSize];
-            
+
+            _gemsDataAvaliable = gemsDataToUseInGame;
+            _gemsInGame = new Gem[rowSize * collumSize];
+
             InitializeGems();
             PlaceGemsOnBoard();
         }
@@ -35,9 +37,9 @@ namespace BJW
 
         private void InitializeGems()
         {
-            for (int i = 0; i < _gems.Length; i++)
+            for (int i = 0; i < _gemsInGame.Length; i++)
             {
-                _gems[i] = new Gem();
+                _gemsInGame[i] = new Gem(_gemsDataAvaliable[0]);    // TODO: Randomize gem data to initialize
             }
         }
         private void PlaceGemsOnBoard()
@@ -48,31 +50,15 @@ namespace BJW
             {
                 for (int collum = 0; collum < _collumSize; collum++)
                 {
-                    var gem = _gems[gemIndex];
+                    var gem = _gemsInGame[gemIndex];
                     var position = new Vector2(row, collum);
-                    
-                    SetGemPosition(gem, position);
+                    gem.SetPosition(position);
                     gemIndex++;
                 }
             }
         }
-        private void SetGemPosition(Gem gem, Vector2 position)
-        {
-            var alreadyHas = _gemsPosition.ContainsKey(gem);
-
-            if (alreadyHas)
-            {
-                _gemsPosition.Add(gem, position);
-            }
-
-            else
-            {
-                _gemsPosition[gem] = position;
-            }
-        }
 
         #endregion
-        
 
         #endregion
         
