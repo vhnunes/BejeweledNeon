@@ -39,7 +39,9 @@ namespace BJW
         {
             for (int i = 0; i < _gemsInGame.Length; i++)
             {
-                _gemsInGame[i] = new Gem(_gemsDataAvaliable[0]);    // TODO: Randomize gem data to initialize
+                var sortGemData = _gemsDataAvaliable[Random.Range(0, _gemsDataAvaliable.Length)];
+                
+                _gemsInGame[i] = new Gem(sortGemData);    // TODO: Randomize gem data to initialize
             }
         }
         private void PlaceGemsOnBoard()
