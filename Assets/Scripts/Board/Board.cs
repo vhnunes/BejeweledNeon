@@ -7,11 +7,18 @@ namespace BJW
     {
         #region Variables
 
-        private BoardState _boardState = BoardState.Waiting;
+        private BoardState _boardState = BoardState.Playing;
         private int _rowSize, _collumSize;
 
         private GemData[] _gemsDataAvaliable;
         private Gem[] _gemsInGame;
+
+        #region Properties
+
+        public BoardState boardState => _boardState;
+        public Gem[] gemsInGame => _gemsInGame;
+
+        #endregion
 
         #endregion
 
@@ -30,14 +37,19 @@ namespace BJW
             PlaceGemsOnBoard();
         }
 
-        #region Gems Control
+        public void ChangeBoardState(BoardState newState)
+        {
+            _boardState = newState;
+        }
+        
+        #region Gems
 
         private void InitializeGems()
         {
             for (int i = 0; i < _gemsInGame.Length; i++)
             {
                 var sortGemData = _gemsDataAvaliable[Random.Range(0, _gemsDataAvaliable.Length)];
-                _gemsInGame[i] = new Gem(sortGemData);    // TODO: Randomize gem data to initialize
+                _gemsInGame[i] = new Gem(sortGemData);
             }
         }
         private void PlaceGemsOnBoard()

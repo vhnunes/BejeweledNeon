@@ -12,6 +12,8 @@ namespace BJW
         private Vector2 _boardPosition = new Vector2();
 
         #region Properties
+
+        public Vector2 boardPosition => _boardPosition;
         public GemState gemState => _gemState;
 
         #endregion
@@ -48,8 +50,7 @@ namespace BJW
             _boardPosition = newPosition;
             _gemView.UpdatePosition(newPosition);
         }
-        
-        
+
         private void CreateView()
         {
             _gemView = new GameObject().AddComponent<GemView>();

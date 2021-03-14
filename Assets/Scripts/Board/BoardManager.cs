@@ -16,6 +16,12 @@ namespace BJW
     
         [SerializeField] private GemCollectionData _gemCollectionToUse = null;
         private Board _board = null;
+
+        #region Properties
+
+        public Board board => _board;
+
+        #endregion
     
         #endregion
     

@@ -7,7 +7,8 @@ public class GameManager : MonoBehaviour
     #region Components
 
     [SerializeField] private BoardManager _boardManager = new BoardManager();
-    private GemControl _gemControl = new GemControl();
+    
+    private GemControl _gemControl = null;
 
     #endregion
 
@@ -20,7 +21,23 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        InitializeBoardManager();
+        
+        InitializeGemControl();
+    }
+
+    #endregion
+
+    #region Methods
+
+    private void InitializeBoardManager()
+    {
         _boardManager.OnStart();
+    }
+
+    private void InitializeGemControl()
+    {
+        _gemControl = new GemControl(_boardManager.board);
     }
 
     #endregion
