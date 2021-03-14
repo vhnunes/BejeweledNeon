@@ -29,10 +29,6 @@ namespace BJW
             PlaceGemsOnBoard();
         }
 
-        #region Board Control
-
-        #endregion
-
         #region Gems Control
 
         private void InitializeGems()
