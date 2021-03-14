@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace BJW
 {
@@ -7,8 +8,14 @@ namespace BJW
         #region Variables
 
         private GemType _gemType;
+        private GemState _gemState;
         private Vector2 _boardPosition = new Vector2();
 
+        #region Properties
+        public GemState gemState => _gemState;
+
+        #endregion
+        
         #endregion
 
         #region Components
@@ -16,6 +23,12 @@ namespace BJW
         [SerializeField] private GemData _gemData = null;
         
         private GemView _gemView = null;
+
+        #endregion
+
+        #region Events / Actions
+
+        public Action OnClick;
 
         #endregion
 
@@ -30,16 +43,18 @@ namespace BJW
             CreateView();
         }
 
-        public void SetPosition(Vector2 newPosition)
+        public void SetBoardPosition(Vector2 newPosition)
         {
             _boardPosition = newPosition;
             _gemView.UpdatePosition(newPosition);
         }
         
+        
         private void CreateView()
         {
             _gemView = new GameObject().AddComponent<GemView>();
             _gemView.SetGemData(_gemData);
+            _gemView.SetGem(this);
         }
 
         #endregion

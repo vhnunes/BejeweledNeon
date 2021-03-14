@@ -4,4 +4,9 @@
     {
         Normal, Rare, SuperRare
     }
+
+    public enum GemState
+    {
+        Idle, Selected, Switching, Falling, Exploding
+    }
 }

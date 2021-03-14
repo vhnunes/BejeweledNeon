@@ -1,66 +1,64 @@
-﻿using System;
-using BJW;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class BoardManager : MonoBehaviour
+namespace BJW
 {
-    #region Variables
-    
-    [SerializeField] private int _boardRowSize = 8;
-    [SerializeField] private int _boardCollumSize = 8;
-
-    #endregion
-    
-    #region Components
-
-    [SerializeField] private GemData[] _gemDatasToUseInGame = null; //TODO: Scriptable of gems game collection to use.
-    
-    private Board _board = null;
-
-    #endregion
-
-    #region MonoBehaviour
-
-    private void OnDrawGizmos()
+    [System.Serializable]
+    public class BoardManager
     {
-        DrawBoardGizmosPreview();
-    }
-
-    private void Start()
-    {
-        InitializeBoard();
-    }
-
-    #endregion
-
-    #region Methods
-
-    private void InitializeBoard()
-    {
-        _board = new Board(_boardRowSize, _boardCollumSize, _gemDatasToUseInGame);
-    }
-
-    #region Gizmos
-
-    private void DrawBoardGizmosPreview()
-    {
-        var sizeX = 1;
-        var sizeY = 1;
+        #region Variables
         
-        var size = new Vector2(sizeX,sizeY);
+        [SerializeField] private int _boardRowSize = 8;
+        [SerializeField] private int _boardCollumSize = 8;
         
-        for (int i = 0; i < _boardRowSize; i++)
+        #endregion
+        
+        #region Components
+    
+        [SerializeField] private GemCollectionData _gemCollectionToUse = null;
+        private Board _board = null;
+    
+        #endregion
+    
+        #region Methods
+    
+        public void OnStart()
         {
-            for (int j = 0; j < _boardCollumSize; j++)
+            InitializeBoard();
+        }
+    
+        public void OnGizmos()
+        {
+            DrawBoardGizmosPreview();
+        }
+        
+        private void InitializeBoard()
+        {
+            _board = new Board(_boardRowSize, _boardCollumSize, _gemCollectionToUse.gemDatas);
+        }
+    
+        #region Gizmos
+    
+        public void DrawBoardGizmosPreview()
+        {
+            var sizeX = 1;
+            var sizeY = 1;
+            
+            var size = new Vector2(sizeX,sizeY);
+            
+            for (int i = 0; i < _boardRowSize; i++)
             {
-                var position = new Vector3(i*size.x, j*size.y, 0);
-                
-                Gizmos.DrawWireCube(position, size);
+                for (int j = 0; j < _boardCollumSize; j++)
+                {
+                    var position = new Vector3(i*size.x, j*size.y, 0);
+                    
+                    Gizmos.DrawWireCube(position, size);
+                }
             }
         }
+    
+        #endregion
+    
+        #endregion
     }
-
-    #endregion
-
-    #endregion
 }
+

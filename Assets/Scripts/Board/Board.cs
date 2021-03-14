@@ -7,6 +7,7 @@ namespace BJW
     {
         #region Variables
 
+        private BoardState _boardState = BoardState.Waiting;
         private int _rowSize, _collumSize;
 
         private GemData[] _gemsDataAvaliable;
@@ -36,7 +37,6 @@ namespace BJW
             for (int i = 0; i < _gemsInGame.Length; i++)
             {
                 var sortGemData = _gemsDataAvaliable[Random.Range(0, _gemsDataAvaliable.Length)];
-                
                 _gemsInGame[i] = new Gem(sortGemData);    // TODO: Randomize gem data to initialize
             }
         }
@@ -50,7 +50,7 @@ namespace BJW
                 {
                     var gem = _gemsInGame[gemIndex];
                     var position = new Vector2(row, collum);
-                    gem.SetPosition(position);
+                    gem.SetBoardPosition(position);
                     gemIndex++;
                 }
             }
