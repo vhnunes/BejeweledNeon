@@ -94,9 +94,10 @@ namespace BJW
             if (horizontalMatch.IsMatch())
             {
                 Debug.Log("Horizontal MATCH!!!");
-                foreach (var _gem in horizontalMatch.gems)
+                foreach (var hGem in horizontalMatch.gems)
                 {
-                    _gem.OnMatch();
+                    if (hGem != gem)
+                        hGem.OnMatch();
                 }
             }
 
@@ -104,11 +105,15 @@ namespace BJW
             {
                 Debug.Log("Vertical MATCH!!!");
                 
-                foreach (var _gem in horizontalMatch.gems)
+                foreach (var hGem in verticalMatch.gems)
                 {
-                    _gem.OnMatch();
+                    if (hGem != gem)
+                        hGem.OnMatch();
                 }
             }
+            
+            if (horizontalMatch.IsMatch() || verticalMatch.IsMatch())
+                gem.OnMatch();
         }
         private GemMatch HorizontalMatcsOfGem(Gem gem)
         {
