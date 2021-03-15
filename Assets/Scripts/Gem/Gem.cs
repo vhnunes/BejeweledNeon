@@ -59,6 +59,20 @@ namespace BJW
         {
             _gemView.gameObject.SetActive(false);
         }
+
+        public bool IsCompatibleWith(Gem other)
+        {
+            if (_gemState != GemState.Idle)
+                return false;
+            
+            if (other.gemColor == _gemColor)
+            {
+                if (other.gemState == GemState.Idle)
+                    return true;
+            }
+            
+            return false;
+        }
         
         private void CreateView()
         {

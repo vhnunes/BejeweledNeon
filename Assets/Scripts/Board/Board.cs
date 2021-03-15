@@ -148,7 +148,6 @@ namespace BJW
             }
             
         }
-
         private void OnHorizontalMatch(GemMatch match, Gem origin)
         {
             Debug.Log("Horizontal MATCH!!!");
@@ -200,8 +199,8 @@ namespace BJW
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
-
-                if (nextGem.gemColor == gem.gemColor)
+                
+                if (nextGem.IsCompatibleWith(gem))
                 {
                     match.AddGem(nextGem);
                     nextGemPosition += Vector2.right;
@@ -216,8 +215,8 @@ namespace BJW
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
-
-                if (nextGem.gemColor == gem.gemColor)
+                
+                if (nextGem.IsCompatibleWith(gem))
                 {
                     match.AddGem(nextGem);
                     nextGemPosition += Vector2.left;
@@ -242,7 +241,7 @@ namespace BJW
             {
                 nextGem = GetGemInPosition(nextGemPosition);
 
-                if (nextGem.gemColor == gem.gemColor)
+                if (nextGem.IsCompatibleWith(gem))
                 {
                     match.AddGem(nextGem);
                     nextGemPosition += Vector2.up;
@@ -258,7 +257,7 @@ namespace BJW
             {
                 nextGem = GetGemInPosition(nextGemPosition);
 
-                if (nextGem.gemColor == gem.gemColor)
+                if (nextGem.IsCompatibleWith(gem))
                 {
                     match.AddGem(nextGem);
                     nextGemPosition += Vector2.down;

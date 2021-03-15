@@ -81,10 +81,16 @@ namespace BJW
             var yDistance = (int) Math.Abs(secondGemPosition.y - firstGemPosition.y);
 
             if (xDistance == 1 && yDistance == 0)
+            {
                 return true;
+            }
+                
             
             else if (yDistance == 1 && xDistance == 0)
+            {
                 return true;
+            }
+                
 
             return false;
         }

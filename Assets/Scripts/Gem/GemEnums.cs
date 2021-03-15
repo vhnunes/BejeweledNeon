@@ -7,6 +7,6 @@
 
     public enum GemState
     {
-        Idle, Selected, Switching, Falling, Exploding
+        Idle, Dead
     }
 }
