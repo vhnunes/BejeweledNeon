@@ -25,5 +25,25 @@ namespace BJW
             
             return false;
         }
+
+        public Gem GetHighestGem()
+        {
+            // Get the most Y position gem in match.
+
+            Gem highHem = null;
+            
+            foreach (var gem in _gems)
+            {
+                if (highHem == null)
+                    highHem = gem;
+                else
+                {
+                    if (gem.boardPosition.y > highHem.boardPosition.y)
+                        highHem = gem;
+                }
+            }
+
+            return highHem;
+        }
     }
 }

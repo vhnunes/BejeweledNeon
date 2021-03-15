@@ -47,8 +47,8 @@ namespace BJW
                 {
                     SwitchGems();
                     // TODO: Gem.OnSwitch()
-                    _board.CheckForMatchsInGem(_firstSelectedGem);
-                    _board.CheckForMatchsInGem(_secondSelectedGem);
+                    _board.TryMatchsInGem(_firstSelectedGem);
+                    _board.TryMatchsInGem(_secondSelectedGem);
                     UnselectAllGems();
                 }
                 else

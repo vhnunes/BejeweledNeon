@@ -67,7 +67,42 @@ namespace BJW
                 }
             }
         }
+        private void FallAllGemsFromPosition(Vector2 boardPosition, int amount = 1)
+        {
+            // All gems from this position to up will fall
 
+            List<Gem> gemsToFall = new List<Gem>();
+            
+            var currentBoardPosition = boardPosition;
+            
+            while (currentBoardPosition.y < _collumSize)
+            {
+                var gem = GetGemInPosition(currentBoardPosition);
+                if (gem != null) gemsToFall.Add(gem);
+                
+                currentBoardPosition.y += 1;
+            }
+
+            foreach (var gem in gemsToFall)
+            {
+                gem.SetBoardPosition(gem.boardPosition + Vector2.down * amount);
+            }
+        }
+
+        private void SendGemToTop(Gem gem)
+        {
+            // Send a gem to top of his collum while not replacing others.
+            var topPosition = new Vector2(gem.boardPosition.x, _collumSize - 1);
+            var gemOnTop = GetGemInPosition(topPosition);
+            
+            while (gemOnTop != null)
+            {
+                topPosition.y -= 1;
+                gemOnTop = GetGemInPosition(topPosition);
+            }
+            
+            gem.SetBoardPosition(topPosition);
+        }
         private Gem GetGemInPosition(Vector2 boardPosition)
         {
             foreach (var gem in _gemsInGame)
@@ -76,14 +111,14 @@ namespace BJW
                     return gem;
             }
             
-            // If erro
-            Debug.LogError($"Cannot find gem in board on {boardPosition}");
             return null;
         }
 
         #endregion
-        
-        public void CheckForMatchsInGem(Gem gem)
+
+        #region Match
+
+        public void TryMatchsInGem(Gem gem)
         {
             GemMatch horizontalMatch = HorizontalMatcsOfGem(gem);
             horizontalMatch.AddGem(gem);
@@ -91,30 +126,68 @@ namespace BJW
             GemMatch verticalMatch = VerticalMatchOfGem(gem);
             verticalMatch.AddGem(gem);
 
-            if (horizontalMatch.IsMatch())
+            bool hasHorizontalMatch = horizontalMatch.IsMatch();
+            bool hasVerticalMatch = verticalMatch.IsMatch();
+            bool hasAnyMatch = hasHorizontalMatch || hasVerticalMatch;
+            bool hasOnlyHorizontalMatch = hasHorizontalMatch && !hasVerticalMatch;
+
+            if (hasHorizontalMatch)
+                OnHorizontalMatch(horizontalMatch, gem);
+            
+            if (hasVerticalMatch)
+                OnVerticalMatch(verticalMatch, gem);
+            
+            if (hasOnlyHorizontalMatch)
+                FallAllGemsFromPosition(gem.boardPosition + Vector2.up);
+
+            if (hasAnyMatch)
             {
-                Debug.Log("Horizontal MATCH!!!");
-                foreach (var hGem in horizontalMatch.gems)
+                // Beacuse the mains gem is not called on vertical or horizontal matchs.
+                gem.OnMatch();
+                SendGemToTop(gem);
+            }
+            
+        }
+
+        private void OnHorizontalMatch(GemMatch match, Gem origin)
+        {
+            Debug.Log("Horizontal MATCH!!!");
+            
+            // Fall all gems up from horizontal gems in match.
+            // Set all gems from horizontal match to goes up in his collum;
+            
+            foreach (var hGem in match.gems)
+            {
+                if (hGem != origin)
                 {
-                    if (hGem != gem)
-                        hGem.OnMatch();
+                    hGem.OnMatch();
+                    FallAllGemsFromPosition(hGem.boardPosition + Vector2.up);
+                    SendGemToTop(hGem);
                 }
             }
 
-            if (verticalMatch.IsMatch())
-            {
-                Debug.Log("Vertical MATCH!!!");
-                
-                foreach (var hGem in verticalMatch.gems)
-                {
-                    if (hGem != gem)
-                        hGem.OnMatch();
-                }
-            }
-            
-            if (horizontalMatch.IsMatch() || verticalMatch.IsMatch())
-                gem.OnMatch();
+
         }
+        private void OnVerticalMatch(GemMatch match, Gem origin)
+        {
+            Debug.Log("Vertical MATCH!!!");
+
+            var highGem = match.GetHighestGem();
+            var verticalCount = match.gems.Count;
+                
+            FallAllGemsFromPosition(highGem.boardPosition + Vector2.up, verticalCount);
+            
+            foreach (var vGem in match.gems)
+            {
+                if (vGem != origin)
+                {
+                    vGem.OnMatch();
+                    SendGemToTop(vGem);
+                }
+                    
+            }
+        }
+        
         private GemMatch HorizontalMatcsOfGem(Gem gem)
         {
             GemMatch match = new GemMatch();
@@ -197,7 +270,6 @@ namespace BJW
             
             return match;
         }
-        
         private bool CanCheckPosition(Vector2 boardPosition)
         {
             if (boardPosition.x >= _rowSize)
@@ -214,6 +286,8 @@ namespace BJW
                 
             return true;
         }
+
+        #endregion
 
         #endregion
         
