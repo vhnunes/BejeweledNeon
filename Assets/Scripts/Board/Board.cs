@@ -6,7 +6,7 @@ namespace BJW
     public class Board
     {
         #region Variables
-
+        
         private BoardState _boardState = BoardState.Playing;
         private int _rowSize, _collumSize;
 
@@ -86,21 +86,30 @@ namespace BJW
         public void CheckForMatchsInGem(Gem gem)
         {
             GemMatch horizontalMatch = HorizontalMatcsOfGem(gem);
+            horizontalMatch.AddGem(gem);
+            
             GemMatch verticalMatch = VerticalMatchOfGem(gem);
+            verticalMatch.AddGem(gem);
 
             if (horizontalMatch.IsMatch())
             {
-                // TODO: ON MATCH
                 Debug.Log("Horizontal MATCH!!!");
+                foreach (var _gem in horizontalMatch.gems)
+                {
+                    _gem.OnMatch();
+                }
             }
 
             if (verticalMatch.IsMatch())
             {
-                // TODO: ON MATCH
                 Debug.Log("Vertical MATCH!!!");
+                
+                foreach (var _gem in horizontalMatch.gems)
+                {
+                    _gem.OnMatch();
+                }
             }
         }
-
         private GemMatch HorizontalMatcsOfGem(Gem gem)
         {
             GemMatch match = new GemMatch();

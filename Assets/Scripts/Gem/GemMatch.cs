@@ -6,6 +6,8 @@ namespace BJW
     {
         private List<Gem> _gems;
 
+        public List<Gem> gems => _gems;
+        
         public void AddGem(Gem gem)
         {
             if (_gems == null) _gems = new List<Gem>();
@@ -18,7 +20,7 @@ namespace BJW
             if (_gems == null)
                 return false;
             
-            else if (_gems.Count > 1)
+            else if (_gems.Count > 2)
                 return true;
             
             return false;

@@ -48,13 +48,18 @@ namespace BJW
             
             CreateView();
         }
-
+        
         public void SetBoardPosition(Vector2 newPosition)
         {
             _boardPosition = newPosition;
             _gemView.UpdatePosition(newPosition);
         }
 
+        public void OnMatch()
+        {
+            _gemView.gameObject.SetActive(false);
+        }
+        
         private void CreateView()
         {
             _gemView = new GameObject().AddComponent<GemView>();
