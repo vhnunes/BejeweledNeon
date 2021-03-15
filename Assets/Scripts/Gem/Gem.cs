@@ -52,12 +52,14 @@ namespace BJW
         public void SetBoardPosition(Vector2 newPosition)
         {
             _boardPosition = newPosition;
-            _gemView.UpdatePosition(newPosition);
+            _gemView.MoveToBoardPosition();
         }
 
         public void OnMatch()
         {
-            _gemView.gameObject.SetActive(false);
+           _gemView.DisableView();
+           _gemState = GemState.Dead;
+           // TODO: Transform this gem into another gem
         }
 
         public bool IsCompatibleWith(Gem other)

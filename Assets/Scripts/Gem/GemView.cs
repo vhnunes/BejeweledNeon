@@ -19,6 +19,7 @@ public class GemView : MonoBehaviour
     
     private void Start()
     {
+        GoToSpawnPosition();
         InitializeRenderer();
         InitializeCollider();
     }
@@ -31,29 +32,47 @@ public class GemView : MonoBehaviour
     #endregion
     
     #region Methods
-
+    
+    private void GoToSpawnPosition()
+    {
+        this.transform.position = _gem.boardPosition + (Vector2.up * 10);
+    }
     private void InitializeRenderer()
     {
         _renderer = this.gameObject.AddComponent<SpriteRenderer>();
         _renderer.sprite = _gemData.gemSprite;
         _renderer.color = _gemData.gemColor;
     }
-
     private void InitializeCollider()
     {
         this.gameObject.AddComponent<BoxCollider2D>();
     }
-    
-    public void UpdatePosition(Vector2 newPosition)
+    private IEnumerator MoveToBoardPositionRoutine()
     {
-        this.transform.position = newPosition;
+        yield return new WaitForSeconds(0.1f); // Fix any initialization race condition
+        
+        var targetPosition = (Vector3) _gem.boardPosition;
+        
+        while (this.transform.position != targetPosition)
+        {
+            yield return new WaitForSeconds(0.01f);
+            this.transform.position = Vector3.MoveTowards(this.transform.position, targetPosition, 0.1f);
+        }
     }
 
+    public void DisableView()
+    {
+        _renderer.enabled = false;
+    }
+    public void MoveToBoardPosition()
+    {
+        StopAllCoroutines();
+        StartCoroutine(MoveToBoardPositionRoutine());
+    }
     public void SetGem(Gem newGem)
     {
         _gem = newGem;
     }
-    
     public void SetGemData(GemData newGemData)
     {
         _gemData = newGemData;
