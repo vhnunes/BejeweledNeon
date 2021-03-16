@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
+    
     #region Components
 
     [SerializeField] private BoardManager _boardManager = new BoardManager();
@@ -19,6 +21,11 @@ public class GameManager : MonoBehaviour
         _boardManager.OnGizmos();
     }
 
+    private void Awake()
+    {
+        InitializeSingleton();
+    }
+
     private void Start()
     {
         InitializeBoardManager();
@@ -29,6 +36,24 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Methods
+
+    private void InitializeSingleton()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            
+            if (this.transform.parent != null)  // Fix to singleton work if this obj started inside another one in scene.
+                this.transform.parent = null;
+            
+            DontDestroyOnLoad(this.gameObject);
+        }
+
+        else
+        {
+            Destroy(this);
+        }
+    }
 
     private void InitializeBoardManager()
     {
