@@ -2,12 +2,17 @@
 
 namespace BJW
 {
-    public struct GemMatch
+    public class GemMatch
     {
-        private List<Gem> _gems;
+        #region Variables
 
+        private List<Gem> _gems = new List<Gem>();
         public List<Gem> gems => _gems;
-        
+
+        #endregion
+
+        #region Methods
+
         public void AddGem(Gem gem)
         {
             if (_gems == null) _gems = new List<Gem>();
@@ -25,7 +30,6 @@ namespace BJW
             
             return false;
         }
-
         public Gem GetHighestGem()
         {
             // Get the most Y position gem in match.
@@ -45,5 +49,8 @@ namespace BJW
 
             return highHem;
         }
+
+        #endregion
+        
     }
 }
