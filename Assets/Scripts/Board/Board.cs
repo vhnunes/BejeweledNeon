@@ -68,18 +68,32 @@ namespace BJW
                 : OnIlegalSwitchRoutine(1f, firstGem, secondGem));
         }
 
-        private IEnumerator OnLegalGemSwitchRoutine(float timeToWait, GemMatch firstGem, GemMatch secondGem)
+        private IEnumerator OnLegalGemSwitchRoutine(float timeToWait, GemMatch firstGemMatch, GemMatch secondGemMatch)
         {
             // TODO: On match occures, check all board for other matchs ocurring to make them.
+
+            GemMatch allGemsMatch = new GemMatch();
+            foreach (var gem in firstGemMatch.gems)
+            {
+                allGemsMatch.AddGem(gem);
+            }
+
+            foreach (var gem in secondGemMatch.gems)
+            {
+                allGemsMatch.AddGem(gem);
+            }
+            
+            foreach (var gem in allGemsMatch.gems)
+            {
+                gem.OnMatchStart();
+            }
             
             // Pre Match
-            
 
             yield return new WaitForSeconds(timeToWait);
             // On Match
-            DoMatch(firstGem);
-            DoMatch(secondGem);
-            
+            DoMatch(allGemsMatch);
+
             yield return new WaitForSeconds(timeToWait);
             // After Match
             

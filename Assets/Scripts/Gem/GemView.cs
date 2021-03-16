@@ -81,13 +81,14 @@ public class GemView : MonoBehaviour
 
     #region Animations
 
-    public void SetOnSelectedAnimation()
+    public void SetSelectedAnimation(bool state)
     {
-        _animator.SetBool("isSelected", true);
+        _animator.SetBool("isSelected", state);
     }
-    public void DisableOnSelectedAnimation()
+
+    public void SetMatchAnimation(bool state)
     {
-        _animator.SetBool("isSelected", false);
+        _animator.SetBool("isOnMatch", state);
     }
 
     #endregion

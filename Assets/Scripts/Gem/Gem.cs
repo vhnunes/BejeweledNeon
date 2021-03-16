@@ -55,8 +55,14 @@ namespace BJW
             _gemView.MoveToBoardPosition();
         }
 
+        public void OnMatchStart()
+        {
+            _gemView.SetMatchAnimation(true);
+        }
+
         public void OnMatchEnd()
         {
+            _gemView.SetMatchAnimation(false);
            _gemView.DisableView();
            _gemState = GemState.Dead;
            // TODO: Transform this gem into another gem
@@ -64,12 +70,12 @@ namespace BJW
 
         public void OnSelected()
         {
-            _gemView.SetOnSelectedAnimation();
+            _gemView.SetSelectedAnimation(true);
         }
 
         public void OnUnselected()
         {
-            _gemView.DisableOnSelectedAnimation();
+            _gemView.SetSelectedAnimation(false);
         }
 
         public bool IsCompatibleWith(Gem other)
