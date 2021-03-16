@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Yellow Gem
   m_EditorClassIdentifier: 
   _gemType: 0
+  _gemPrefab: {fileID: 4411876790893098845, guid: ded6ee947abc7a147b6ad7f2dd2fb617,
+    type: 3}
   _gemSprite: {fileID: 21300000, guid: afd0c315c6741f74cb31add54e548759, type: 3}
   _gemColor: {r: 1, g: 0.9248581, b: 0, a: 1}
