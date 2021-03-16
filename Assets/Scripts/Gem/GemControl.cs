@@ -45,24 +45,15 @@ namespace BJW
 
                 if (CanSwitchGems())
                 {
-                    SwitchGems();
-                    // TODO: Gem.OnSwitch()
-                    _board.TryMatchsInGem(_firstSelectedGem);
-                    _board.TryMatchsInGem(_secondSelectedGem);
+                    _board.SwitchGems(_firstSelectedGem, _secondSelectedGem);
+                    _board.OnSwitchGems(_firstSelectedGem, _secondSelectedGem);
+                    
                     UnselectAllGems();
                 }
+                
                 else
                     UnselectAllGems();
             }
-        }
-
-        private void SwitchGems()
-        {
-            var firstGemPosition = _firstSelectedGem.boardPosition;
-            var secondGemPosition = _secondSelectedGem.boardPosition;
-            
-            _firstSelectedGem.SetBoardPosition(secondGemPosition);
-            _secondSelectedGem.SetBoardPosition(firstGemPosition);
         }
 
         private void UnselectAllGems()
@@ -73,6 +64,19 @@ namespace BJW
         }
 
         private bool CanSwitchGems()
+        {
+            var isOnRangeToSwitch = IsOnRangeToSwitch();
+
+            if (isOnRangeToSwitch)
+            {
+                return true;
+            }
+                
+            
+            return false;
+        }
+
+        private bool IsOnRangeToSwitch()
         {
             var firstGemPosition = _firstSelectedGem.boardPosition;
             var secondGemPosition = _secondSelectedGem.boardPosition;
@@ -90,8 +94,7 @@ namespace BJW
             {
                 return true;
             }
-                
-
+            
             return false;
         }
         

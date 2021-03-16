@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BJW
@@ -43,6 +44,45 @@ namespace BJW
         }
         
         #region Gems
+        
+        public void SwitchGems(Gem firstGem, Gem secondGem)
+        {
+            var firstGemPosition = firstGem.boardPosition;
+            var secondGemPosition = secondGem.boardPosition;
+            
+            firstGem.SetBoardPosition(secondGemPosition);
+            secondGem.SetBoardPosition(firstGemPosition);
+        }
+        public void OnSwitchGems(Gem firstGem, Gem secondGem)
+        {
+            var firstGemMatch = TryAndDoMatchsInGem(firstGem);
+            var secondGemMatch = TryAndDoMatchsInGem(secondGem);
+            
+            ChangeBoardState(BoardState.Waiting);
+            
+            // TODO: After change board state to wait, wait for a time and if any match ocurred let him go,
+            // TODO: else make gems go back to pre switch position
+            var isSwitchLegal = firstGemMatch || secondGemMatch;
+            
+            // TODO: Better way to use start coroutine without need for singleton? Can have a refence in this class...
+            GameManager.instance.StartCoroutine(isSwitchLegal
+                ? OnLegalGemSwitchRoutine(1f)
+                : OnIlegalSwitchRoutine(1f, firstGem, secondGem));
+        }
+
+        private IEnumerator OnLegalGemSwitchRoutine(float timeToWait)
+        {
+            yield return new WaitForSeconds(timeToWait);
+            ChangeBoardState(BoardState.Playing);
+        }
+
+        private IEnumerator OnIlegalSwitchRoutine(float timeToWait, Gem firstGem, Gem secondGem)
+        {
+            yield return new WaitForSeconds(timeToWait);
+            SwitchGems(firstGem, secondGem);
+            yield return new WaitForSeconds(timeToWait);
+            ChangeBoardState(BoardState.Playing);
+        }
 
         private void InitializeGems()
         {
@@ -118,7 +158,7 @@ namespace BJW
 
         #region Match
 
-        public void TryMatchsInGem(Gem gem)
+        public bool TryAndDoMatchsInGem(Gem gem)
         {
             GemMatch horizontalMatch = HorizontalMatcsOfGem(gem);
             horizontalMatch.AddGem(gem);
@@ -145,8 +185,11 @@ namespace BJW
                 // Beacuse the mains gem is not called on vertical or horizontal matchs.
                 gem.OnMatch();
                 SendGemToTop(gem);
+                return true;
             }
-            
+
+            return false;
+
         }
         private void OnHorizontalMatch(GemMatch match, Gem origin)
         {
