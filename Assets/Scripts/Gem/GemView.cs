@@ -39,7 +39,7 @@ public class GemView : MonoBehaviour
     }
     private void InitializeRenderer()
     {
-        _renderer = this.gameObject.AddComponent<SpriteRenderer>();
+        _renderer = this.gameObject.GetComponent<SpriteRenderer>();
         _renderer.sprite = _gemData.gemSprite;
         _renderer.color = _gemData.gemColor;
     }

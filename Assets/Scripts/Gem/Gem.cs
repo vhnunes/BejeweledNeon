@@ -6,7 +6,7 @@ namespace BJW
     public class Gem
     {
         #region Variables
-
+        
         private GemType _gemType;
         private GemState _gemState;
         private Color _gemColor;
@@ -78,9 +78,11 @@ namespace BJW
         
         private void CreateView()
         {
-            _gemView = new GameObject().AddComponent<GemView>();
-            _gemView.SetGemData(_gemData);
+            var gemViewObjInstance =  MonoBehaviour.Instantiate(_gemData.gemPrefab);
+            
+            _gemView = gemViewObjInstance.AddComponent<GemView>();
             _gemView.SetGem(this);
+            _gemView.SetGemData(_gemData);
         }
 
         #endregion

@@ -70,14 +70,13 @@ namespace BJW
 
         private IEnumerator OnLegalGemSwitchRoutine(float timeToWait, Gem firstGem, Gem secondGem)
         {
-            yield return new WaitForSeconds(timeToWait);
-            
             // TODO: Fix bug when occurs vertical and horizontal match and return null.
+            // TODO: On match occures, check all board for other matchs ocurring to make them.
+            
+            yield return new WaitForSeconds(timeToWait);
             DoMatchOnGem(firstGem);
             DoMatchOnGem(secondGem);
-            
             yield return new WaitForSeconds(timeToWait);
-
 
         }
         private IEnumerator OnIlegalSwitchRoutine(float timeToWait, Gem firstGem, Gem secondGem)

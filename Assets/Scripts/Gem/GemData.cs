@@ -8,12 +8,14 @@ namespace BJW
         #region Variables
 
         [SerializeField] private GemType _gemType;
+        [SerializeField] private GameObject _gemPrefab;
         [SerializeField] private Sprite _gemSprite = null;
         [SerializeField] private Color _gemColor = new Color();
         
         #region Properties
 
         public GemType gemType => _gemType;
+        public GameObject gemPrefab => _gemPrefab;
         public Sprite gemSprite => _gemSprite;
         public Color gemColor => _gemColor;
 
