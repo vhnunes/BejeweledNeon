@@ -77,6 +77,7 @@ namespace BJW
             DoMatchOnGem(firstGem);
             DoMatchOnGem(secondGem);
             yield return new WaitForSeconds(timeToWait);
+            ChangeBoardState(BoardState.Playing);
 
         }
         private IEnumerator OnIlegalSwitchRoutine(float timeToWait, Gem firstGem, Gem secondGem)
