@@ -37,6 +37,7 @@ namespace BJW
             {
                 _board.ChangeBoardState(BoardState.GemSelected);
                 _firstSelectedGem = gem;
+                gem.OnSelected();
             }
             
             else if (_board.boardState == BoardState.GemSelected)
@@ -50,17 +51,24 @@ namespace BJW
                     
                     UnselectAllGems();
                 }
-                
+
                 else
+                {
                     UnselectAllGems();
+                    // TODO: Improve board state changes(?)
+                    _board.ChangeBoardState(BoardState.Playing);
+                }
+                    
             }
         }
 
         private void UnselectAllGems()
         {
+            _firstSelectedGem.OnUnselected();
+            _secondSelectedGem.OnUnselected();
+            
             _firstSelectedGem = null;
             _secondSelectedGem = null;
-            _board.ChangeBoardState(BoardState.Playing);
         }
 
         private bool CanSwitchGems()
@@ -100,11 +108,8 @@ namespace BJW
         
         private bool CanInteractWithGem()
         {
-            switch (_board.boardState)
-            {
-                case BoardState.Waiting:
-                    return false;
-            }
+            if (_board.boardState == BoardState.Waiting)
+                return false;
             
             
             // True if no negation conditions above

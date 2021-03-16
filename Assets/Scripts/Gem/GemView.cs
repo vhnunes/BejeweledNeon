@@ -12,7 +12,8 @@ public class GemView : MonoBehaviour
 
     private Gem _gem = null;
     private SpriteRenderer _renderer = null;
-
+    private Animator _animator => this.gameObject.GetComponent<Animator>();
+    
     #endregion
 
     #region MonoBehaviour
@@ -77,6 +78,19 @@ public class GemView : MonoBehaviour
     {
         _gemData = newGemData;
     }
+
+    #region Animations
+
+    public void SetOnSelectedAnimation()
+    {
+        _animator.SetBool("isSelected", true);
+    }
+    public void DisableOnSelectedAnimation()
+    {
+        _animator.SetBool("isSelected", false);
+    }
+
+    #endregion
 
     #endregion
 }

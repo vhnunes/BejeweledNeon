@@ -62,6 +62,16 @@ namespace BJW
            // TODO: Transform this gem into another gem
         }
 
+        public void OnSelected()
+        {
+            _gemView.SetOnSelectedAnimation();
+        }
+
+        public void OnUnselected()
+        {
+            _gemView.DisableOnSelectedAnimation();
+        }
+
         public bool IsCompatibleWith(Gem other)
         {
             if (_gemState != GemState.Idle)
@@ -75,7 +85,6 @@ namespace BJW
             
             return false;
         }
-        
         private void CreateView()
         {
             var gemViewObjInstance =  MonoBehaviour.Instantiate(_gemData.gemPrefab);
