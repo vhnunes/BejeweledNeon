@@ -55,27 +55,31 @@ namespace BJW
         }
         public void OnSwitchGems(Gem firstGem, Gem secondGem)
         {
-            var firstGemMatch = TryAndDoMatchsInGem(firstGem);
-            var secondGemMatch = TryAndDoMatchsInGem(secondGem);
-            
             ChangeBoardState(BoardState.Waiting);
             
-            // TODO: After change board state to wait, wait for a time and if any match ocurred let him go,
-            // TODO: else make gems go back to pre switch position
+            var firstGemMatch = HasMatchsInGem(firstGem);
+            var secondGemMatch = HasMatchsInGem(secondGem);
+
             var isSwitchLegal = firstGemMatch || secondGemMatch;
             
             // TODO: Better way to use start coroutine without need for singleton? Can have a refence in this class...
             GameManager.instance.StartCoroutine(isSwitchLegal
-                ? OnLegalGemSwitchRoutine(1f)
+                ? OnLegalGemSwitchRoutine(1f, firstGem, secondGem)
                 : OnIlegalSwitchRoutine(1f, firstGem, secondGem));
         }
 
-        private IEnumerator OnLegalGemSwitchRoutine(float timeToWait)
+        private IEnumerator OnLegalGemSwitchRoutine(float timeToWait, Gem firstGem, Gem secondGem)
         {
             yield return new WaitForSeconds(timeToWait);
-            ChangeBoardState(BoardState.Playing);
-        }
+            
+            // TODO: Fix bug when occurs vertical and horizontal match and return null.
+            DoMatchOnGem(firstGem);
+            DoMatchOnGem(secondGem);
+            
+            yield return new WaitForSeconds(timeToWait);
 
+
+        }
         private IEnumerator OnIlegalSwitchRoutine(float timeToWait, Gem firstGem, Gem secondGem)
         {
             yield return new WaitForSeconds(timeToWait);
@@ -157,8 +161,8 @@ namespace BJW
         #endregion
 
         #region Match
-
-        public bool TryAndDoMatchsInGem(Gem gem)
+        
+        private bool HasMatchsInGem(Gem gem)
         {
             GemMatch horizontalMatch = HorizontalMatcsOfGem(gem);
             horizontalMatch.AddGem(gem);
@@ -169,8 +173,22 @@ namespace BJW
             bool hasHorizontalMatch = horizontalMatch.IsMatch();
             bool hasVerticalMatch = verticalMatch.IsMatch();
             bool hasAnyMatch = hasHorizontalMatch || hasVerticalMatch;
+            
+            return hasAnyMatch;
+        }
+        private void DoMatchOnGem(Gem gem)
+        {
+            GemMatch horizontalMatch = HorizontalMatcsOfGem(gem);
+            horizontalMatch.AddGem(gem);
+            
+            GemMatch verticalMatch = VerticalMatchOfGem(gem);
+            verticalMatch.AddGem(gem);
+            
+            bool hasHorizontalMatch = horizontalMatch.IsMatch();
+            bool hasVerticalMatch = verticalMatch.IsMatch();
+            bool hasAnyMatch = hasHorizontalMatch || hasVerticalMatch;
             bool hasOnlyHorizontalMatch = hasHorizontalMatch && !hasVerticalMatch;
-
+            
             if (hasHorizontalMatch)
                 OnHorizontalMatch(horizontalMatch, gem);
             
@@ -185,11 +203,7 @@ namespace BJW
                 // Beacuse the mains gem is not called on vertical or horizontal matchs.
                 gem.OnMatch();
                 SendGemToTop(gem);
-                return true;
             }
-
-            return false;
-
         }
         private void OnHorizontalMatch(GemMatch match, Gem origin)
         {
