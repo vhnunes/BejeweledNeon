@@ -57,26 +57,32 @@ namespace BJW
         {
             ChangeBoardState(BoardState.Waiting);
             
-            var firstGemMatch = HasMatchsInGem(firstGem);
-            var secondGemMatch = HasMatchsInGem(secondGem);
+            var firstGemMatch = MatchInGem(firstGem);
+            var secondGemMatch = MatchInGem(secondGem);
 
-            var isSwitchLegal = firstGemMatch || secondGemMatch;
+            var isSwitchLegal = firstGemMatch.IsMatch() || secondGemMatch.IsMatch();
             
             // TODO: Better way to use start coroutine without need for singleton? Can have a refence in this class...
             GameManager.instance.StartCoroutine(isSwitchLegal
-                ? OnLegalGemSwitchRoutine(1f, firstGem, secondGem)
+                ? OnLegalGemSwitchRoutine(1f, firstGemMatch, secondGemMatch)
                 : OnIlegalSwitchRoutine(1f, firstGem, secondGem));
         }
 
-        private IEnumerator OnLegalGemSwitchRoutine(float timeToWait, Gem firstGem, Gem secondGem)
+        private IEnumerator OnLegalGemSwitchRoutine(float timeToWait, GemMatch firstGem, GemMatch secondGem)
         {
-            // TODO: Fix bug when occurs vertical and horizontal match and return null.
             // TODO: On match occures, check all board for other matchs ocurring to make them.
             
+            // Pre Match
+            
+
             yield return new WaitForSeconds(timeToWait);
-            DoMatchOnGem(firstGem);
-            DoMatchOnGem(secondGem);
+            // On Match
+            DoMatch(firstGem);
+            DoMatch(secondGem);
+            
             yield return new WaitForSeconds(timeToWait);
+            // After Match
+            
             ChangeBoardState(BoardState.Playing);
 
         }
@@ -162,89 +168,49 @@ namespace BJW
 
         #region Match
         
-        private bool HasMatchsInGem(Gem gem)
+        private void DoMatch(GemMatch match)
         {
-            GemMatch horizontalMatch = HorizontalMatcsOfGem(gem);
-            horizontalMatch.AddGem(gem);
-            
-            GemMatch verticalMatch = VerticalMatchOfGem(gem);
-            verticalMatch.AddGem(gem);
+            bool isMatchLegal = match.IsMatch();
 
-            bool hasHorizontalMatch = horizontalMatch.IsMatch();
-            bool hasVerticalMatch = verticalMatch.IsMatch();
-            bool hasAnyMatch = hasHorizontalMatch || hasVerticalMatch;
-            
-            return hasAnyMatch;
-        }
-        private void DoMatchOnGem(Gem gem)
-        {
-            GemMatch horizontalMatch = HorizontalMatcsOfGem(gem);
-            horizontalMatch.AddGem(gem);
-            
-            GemMatch verticalMatch = VerticalMatchOfGem(gem);
-            verticalMatch.AddGem(gem);
-            
-            bool hasHorizontalMatch = horizontalMatch.IsMatch();
-            bool hasVerticalMatch = verticalMatch.IsMatch();
-            bool hasAnyMatch = hasHorizontalMatch || hasVerticalMatch;
-            bool hasOnlyHorizontalMatch = hasHorizontalMatch && !hasVerticalMatch;
-            
-            if (hasHorizontalMatch)
-                OnHorizontalMatch(horizontalMatch, gem);
-            
-            if (hasVerticalMatch)
-                OnVerticalMatch(verticalMatch, gem);
-            
-            if (hasOnlyHorizontalMatch)
-                FallAllGemsFromPosition(gem.boardPosition + Vector2.up);
-
-            if (hasAnyMatch)
+            if (isMatchLegal)
             {
-                // Beacuse the mains gem is not called on vertical or horizontal matchs.
-                gem.OnMatch();
-                SendGemToTop(gem);
-            }
-        }
-        private void OnHorizontalMatch(GemMatch match, Gem origin)
-        {
-            Debug.Log("Horizontal MATCH!!!");
-            
-            // Fall all gems up from horizontal gems in match.
-            // Set all gems from horizontal match to goes up in his collum;
-            
-            foreach (var hGem in match.gems)
-            {
-                if (hGem != origin)
+                foreach (var hGem in match.gems)
                 {
-                    hGem.OnMatch();
+                    hGem.OnMatchEnd();
                     FallAllGemsFromPosition(hGem.boardPosition + Vector2.up);
                     SendGemToTop(hGem);
                 }
             }
-
-
         }
-        private void OnVerticalMatch(GemMatch match, Gem origin)
+        private GemMatch MatchInGem(Gem gem)
         {
-            Debug.Log("Vertical MATCH!!!");
-
-            var highGem = match.GetHighestGem();
-            var verticalCount = match.gems.Count;
-                
-            FallAllGemsFromPosition(highGem.boardPosition + Vector2.up, verticalCount);
+            GemMatch horizontalMatch = HorizontalMatchOfGem(gem);
+            horizontalMatch.AddGem(gem);
             
-            foreach (var vGem in match.gems)
+            GemMatch verticalMatch = VerticalMatchOfGem(gem);
+            verticalMatch.AddGem(gem);
+
+            GemMatch definitiveMatch = new GemMatch();
+
+            if (horizontalMatch.IsMatch())
             {
-                if (vGem != origin)
+                foreach (var _gem in horizontalMatch.gems)
                 {
-                    vGem.OnMatch();
-                    SendGemToTop(vGem);
+                    definitiveMatch.AddGem(_gem);
                 }
-                    
             }
+
+            if (verticalMatch.IsMatch())
+            {
+                foreach (var _gem in verticalMatch.gems)
+                {
+                    definitiveMatch.AddGem(_gem);
+                }
+            }
+
+            return definitiveMatch;
         }
-        
-        private GemMatch HorizontalMatcsOfGem(Gem gem)
+        private GemMatch HorizontalMatchOfGem(Gem gem)
         {
             GemMatch match = new GemMatch();
             

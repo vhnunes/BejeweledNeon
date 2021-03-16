@@ -55,7 +55,7 @@ namespace BJW
             _gemView.MoveToBoardPosition();
         }
 
-        public void OnMatch()
+        public void OnMatchEnd()
         {
            _gemView.DisableView();
            _gemState = GemState.Dead;
