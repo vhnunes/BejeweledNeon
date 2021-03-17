@@ -6,7 +6,8 @@ namespace BJW
     public class BoardManager
     {
         #region Variables
-        
+
+        private bool canStartWitchMatches = false;
         [SerializeField] private int _boardRowSize = 8;
         [SerializeField] private int _boardCollumSize = 8;
         
@@ -39,7 +40,7 @@ namespace BJW
         
         private void InitializeBoard()
         {
-            _board = new Board(_boardRowSize, _boardCollumSize, _gemCollectionToUse.gemDatas);
+            _board = new Board(_boardRowSize, _boardCollumSize, _gemCollectionToUse.gemDatas, canStartWitchMatches);
         }
     
         #region Gizmos

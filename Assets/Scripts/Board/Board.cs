@@ -7,6 +7,8 @@ namespace BJW
     public class Board
     {
         #region Variables
+
+        private bool _canStartWitchMatches = false;
         
         private BoardState _boardState = BoardState.Playing;
         private int _rowSize, _collumSize;
@@ -27,8 +29,10 @@ namespace BJW
         #region Methods
         
         // Constructor
-        public Board(int rowSize, int collumSize, GemData[] gemsDataToUseInGame)
+        public Board(int rowSize, int collumSize, GemData[] gemsDataToUseInGame, bool canStartWithMatches = false)
         {
+            _canStartWitchMatches = canStartWithMatches;
+            
             _rowSize = rowSize;
             _collumSize = collumSize;
 
@@ -112,14 +116,13 @@ namespace BJW
         {
             for (int i = 0; i < _gemsInGame.Length; i++)
             {
-                var sortGemData = _gemsDataAvaliable[Random.Range(0, _gemsDataAvaliable.Length)];
+                var sortGemData = GetRandomGemData();
                 _gemsInGame[i] = new Gem(sortGemData);
             }
         }
         private void PlaceGemsOnBoard()
         {
             int gemIndex = 0;
-            
             for (int row = 0; row < _rowSize; row++)
             {
                 for (int collum = 0; collum < _collumSize; collum++)
@@ -129,6 +132,15 @@ namespace BJW
                     gem.SetBoardPosition(position);
                     gemIndex++;
                 }
+            }
+            
+            var matches = GetAllMatchsInBoard();
+            while (matches.Length > 0)
+            {
+                var firstGemOnMatch = matches[0].gems[0];
+                
+                SetGemToAnother(firstGemOnMatch, true);
+                matches = GetAllMatchsInBoard();
             }
         }
         private void FallAllGemsFromPosition(Vector2 boardPosition, int amount = 1)
@@ -152,7 +164,22 @@ namespace BJW
                 gem.SetBoardPosition(gem.boardPosition + Vector2.down * amount);
             }
         }
+        
+        private void SetGemToAnother(Gem gem, GemData newGemData)
+        {
+            gem.TransformIntoNewGem(newGemData);
+        }
+        private void SetGemToAnother(Gem gem, bool randomNewData)
+        {
+            var sortGemData = GetRandomGemData();
+            gem.TransformIntoNewGem(sortGemData);
+        }
 
+        private GemData GetRandomGemData()
+        {
+            return _gemsDataAvaliable[Random.Range(0, _gemsDataAvaliable.Length)];
+        }
+        
         private void SendGemToTop(Gem gem)
         {
             // Send a gem to top of his collum while not replacing others.
@@ -182,6 +209,20 @@ namespace BJW
 
         #region Match
 
+        private void DoMatch(GemMatch match)
+        {
+            bool isMatchLegal = match.IsMatch();
+
+            if (isMatchLegal)
+            {
+                foreach (var hGem in match.gems)
+                {
+                    hGem.OnMatchEnd();
+                    FallAllGemsFromPosition(hGem.boardPosition + Vector2.up);
+                    SendGemToTop(hGem);
+                }
+            }
+        }
         private GemMatch[] GetAllMatchsInBoard()
         {
             // The ideia is to star checkin in first position of board, after
@@ -277,21 +318,6 @@ namespace BJW
             
             Debug.Log($"The board has {boardMatchs.Count} match 3 ocurring.");
             return boardMatchs.ToArray();
-        }
-
-        private void DoMatch(GemMatch match)
-        {
-            bool isMatchLegal = match.IsMatch();
-
-            if (isMatchLegal)
-            {
-                foreach (var hGem in match.gems)
-                {
-                    hGem.OnMatchEnd();
-                    FallAllGemsFromPosition(hGem.boardPosition + Vector2.up);
-                    SendGemToTop(hGem);
-                }
-            }
         }
         private GemMatch MatchInGem(Gem gem)
         {
