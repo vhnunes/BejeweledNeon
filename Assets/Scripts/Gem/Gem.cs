@@ -48,18 +48,27 @@ namespace BJW
             
             CreateView();
         }
+
+        public void TransformIntoNewGem(GemData newGemData)
+        {
+            _gemData = newGemData;
+            _gemType = newGemData.gemType;
+            _gemColor = newGemData.gemColor;
+            
+            _gemView.SetGem(this);
+            _gemView.SetGemData(_gemData);
+        }
         
         public void SetBoardPosition(Vector2 newPosition)
         {
             _boardPosition = newPosition;
             _gemView.MoveToBoardPosition();
         }
-
+        
         public void OnMatchStart()
         {
             _gemView.SetMatchAnimation(true);
         }
-
         public void OnMatchEnd()
         {
             _gemView.SetMatchAnimation(false);
@@ -67,12 +76,10 @@ namespace BJW
            _gemState = GemState.Dead;
            // TODO: Transform this gem into another gem
         }
-
         public void OnSelected()
         {
             _gemView.SetSelectedAnimation(true);
         }
-
         public void OnUnselected()
         {
             _gemView.SetSelectedAnimation(false);
@@ -91,6 +98,7 @@ namespace BJW
             
             return false;
         }
+        
         private void CreateView()
         {
             var gemViewObjInstance =  MonoBehaviour.Instantiate(_gemData.gemPrefab);
