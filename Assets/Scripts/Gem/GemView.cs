@@ -20,8 +20,6 @@ public class GemView : MonoBehaviour
     
     private void Start()
     {
-        GoToSpawnPosition();
-        InitializeRenderer();
         InitializeCollider();
     }
 
@@ -77,6 +75,8 @@ public class GemView : MonoBehaviour
     public void SetGemData(GemData newGemData)
     {
         _gemData = newGemData;
+        GoToSpawnPosition();    // Switched from start to here to create an awesome effect
+        InitializeRenderer();
     }
 
     #region Animations

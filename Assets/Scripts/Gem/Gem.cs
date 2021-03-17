@@ -70,11 +70,9 @@ namespace BJW
             _gemView.SetMatchAnimation(true);
         }
         public void OnMatchEnd()
-        {
+        { 
             _gemView.SetMatchAnimation(false);
-           _gemView.DisableView();
-           _gemState = GemState.Dead;
-           // TODO: Transform this gem into another gem
+            //_gemState = GemState.Dead;
         }
         public void OnSelected()
         {

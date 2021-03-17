@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -186,7 +186,7 @@ namespace BJW
             var topPosition = new Vector2(gem.boardPosition.x, _collumSize - 1);
             var gemOnTop = GetGemInPosition(topPosition);
             
-            while (gemOnTop != null)
+            while (gemOnTop != null && gemOnTop != gem)
             {
                 topPosition.y -= 1;
                 gemOnTop = GetGemInPosition(topPosition);
@@ -218,6 +218,7 @@ namespace BJW
                 foreach (var hGem in match.gems)
                 {
                     hGem.OnMatchEnd();
+                    hGem.TransformIntoNewGem(GetRandomGemData());
                     FallAllGemsFromPosition(hGem.boardPosition + Vector2.up);
                     SendGemToTop(hGem);
                 }
