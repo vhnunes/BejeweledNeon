@@ -7,7 +7,7 @@ namespace BJW
     {
         #region Variables
 
-        private bool canStartWitchMatches = false;
+        [SerializeField] private bool canStartWitchMatches = false;
         [SerializeField] private int _boardRowSize = 8;
         [SerializeField] private int _boardCollumSize = 8;
         
