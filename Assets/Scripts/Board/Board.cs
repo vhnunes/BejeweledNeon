@@ -181,7 +181,104 @@ namespace BJW
         #endregion
 
         #region Match
-        
+
+        private GemMatch[] GetAllMatchsInBoard()
+        {
+            // The ideia is to star checkin in first position of board, after
+            // i will ignore in next check the 2 next horizontal an 2 next vertical positions from this
+            // checked position. Simply because a match always will require at least 3 equals pieces in his axis,
+            // dont needto check for all pieces in board.
+
+            List<GemMatch> boardMatchs = new List<GemMatch>();
+
+            // TODO: Isolate that on board initialization
+            Vector2[] positionsInBoard = new Vector2[_rowSize * _collumSize];
+            int positionIndex = 0;
+            for (int row = 0; row < _rowSize; row++)
+            {
+                for (int collum = 0; collum < _collumSize; collum++)
+                {
+                    var position = new Vector2(row, collum);
+                    positionsInBoard[positionIndex] = position;
+                    positionIndex++;
+                }
+            }
+
+            List<Vector2> positionsToCheck = new List<Vector2>();
+            List<Vector2> positionsToNotCheck = new List<Vector2>();
+            
+            var lastPositionCheck = new Vector2();
+            positionsToCheck.Add(lastPositionCheck);
+            positionsToNotCheck.Add(lastPositionCheck);
+            
+            while (lastPositionCheck.y < _collumSize)
+            {
+                // Ad positions to not check based on last position.
+                for (int x = 1; x < 3; x++)
+                {
+                    var position = lastPositionCheck + new Vector2(x, 0);
+                    if (position.x >= _rowSize)
+                        break;
+                        
+                    if (!positionsToNotCheck.Contains(position))
+                        positionsToNotCheck.Add(position);
+                }
+                
+                for (int y = 1; y < 3; y++)
+                {
+                    var position = lastPositionCheck + new Vector2(0, y);
+                    if (position.y >= _collumSize)
+                        break;
+                    
+                    if (!positionsToNotCheck.Contains(position))
+                        positionsToNotCheck.Add(position);
+                }
+                
+                // Ad next position to check and set it as last
+                // if next position is a position to uncheck, go to next
+                var nextPosition = lastPositionCheck;
+                while (positionsToNotCheck.Contains(nextPosition))
+                {
+                    bool brk = false;
+                    
+                    while (nextPosition.x < _rowSize-1)
+                    {
+                        nextPosition.x += 1;
+                        if (!positionsToNotCheck.Contains(nextPosition))
+                        {
+                            brk = true;
+                            break;
+                        }
+                    }
+                    
+                    // If while pass without break.
+                    if (!brk)
+                    {
+                        nextPosition.x = 0;
+                        nextPosition.y += 1;
+                    }
+                        
+                }
+                
+                positionsToCheck.Add(nextPosition);
+                positionsToNotCheck.Add(nextPosition);
+                lastPositionCheck = nextPosition;
+            }
+            positionsToCheck.Remove(positionsToCheck[positionsToCheck.Count - 1]);
+
+            // Check for match in all positions to check
+            foreach (var position in positionsToCheck)
+            {
+                var gem = GetGemInPosition(position);
+                var match = MatchInGem(gem);
+                if (match.IsMatch())
+                    boardMatchs.Add(match);
+            }
+            
+            Debug.Log($"The board has {boardMatchs.Count} match 3 ocurring.");
+            return boardMatchs.ToArray();
+        }
+
         private void DoMatch(GemMatch match)
         {
             bool isMatchLegal = match.IsMatch();
