@@ -74,32 +74,28 @@ namespace BJW
 
         private IEnumerator OnLegalGemSwitchRoutine(float timeToWait, GemMatch firstGemMatch, GemMatch secondGemMatch)
         {
-            // TODO: On match occures, check all board for other matchs ocurring to make them.
-
             GemMatch allGemsMatch = new GemMatch();
             foreach (var gem in firstGemMatch.gems)
             {
                 allGemsMatch.AddGem(gem);
             }
-
             foreach (var gem in secondGemMatch.gems)
             {
                 allGemsMatch.AddGem(gem);
             }
+
+            var mainRoutine = GameManager.instance.StartCoroutine(MatchGemRoutine(allGemsMatch, timeToWait));
+            yield return mainRoutine;
             
-            foreach (var gem in allGemsMatch.gems)
+            // Do all other matches that can have in board.
+            var boardMatches = GetAllMatchsInBoard();
+            while (boardMatches.Length > 0)
             {
-                gem.OnMatchStart();
+                var otherRoutines = GameManager.instance.StartCoroutine(MatchGemRoutine(boardMatches[0], timeToWait));
+                yield return otherRoutines;
+                boardMatches = GetAllMatchsInBoard();
+                yield return new WaitForSeconds(timeToWait);
             }
-            
-            // Pre Match
-
-            yield return new WaitForSeconds(timeToWait);
-            // On Match
-            DoMatch(allGemsMatch);
-
-            yield return new WaitForSeconds(timeToWait);
-            // After Match
             
             ChangeBoardState(BoardState.Playing);
 
@@ -216,18 +212,46 @@ namespace BJW
         private void DoMatch(GemMatch match)
         {
             bool isMatchLegal = match.IsMatch();
-
-            if (isMatchLegal)
+            if (!isMatchLegal) return;
+            
+            foreach (var hGem in match.gems)
             {
-                foreach (var hGem in match.gems)
-                {
-                    hGem.OnMatchEnd();
-                    hGem.TransformIntoNewGem(GetRandomGemData());
-                    FallAllGemsFromPosition(hGem.boardPosition + Vector2.up);
-                    SendGemToTop(hGem);
-                }
+                hGem.OnMatchEnd();
+                hGem.TransformIntoNewGem(GetRandomGemData());
+                FallAllGemsFromPosition(hGem.boardPosition + Vector2.up);
+                SendGemToTop(hGem);
+            }
+            
+            // TODO: After match check board for other matches decurred of this match.
+            //DoAllMatchesInBoard();
+        }
+        private void DoAllMatchesInBoard()
+        {
+            var matchesInBoard = GetAllMatchsInBoard();
+            foreach (var match in matchesInBoard)
+            {
+                DoMatch(match);
             }
         }
+
+        private IEnumerator MatchGemRoutine(GemMatch match, float timeToWait)
+        {
+            // Pre Match
+            foreach (var gem in match.gems)
+            {
+                gem.OnMatchStart();
+            }
+            yield return new WaitForSeconds(timeToWait);
+            
+            // On Match
+            DoMatch(match);
+
+            yield return new WaitForSeconds(timeToWait);
+            
+            // After Match
+            ChangeBoardState(BoardState.Playing);
+        }
+        
         private GemMatch[] GetAllMatchsInBoard()
         {
             // The ideia is to star checkin in first position of board, after
