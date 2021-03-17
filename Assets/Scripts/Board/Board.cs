@@ -134,7 +134,7 @@ namespace BJW
                 }
             }
 
-            if (_canStartWitchMatches)
+            if (!_canStartWitchMatches)
             {
                 var matches = GetAllMatchsInBoard();
                 while (matches.Length > 0)
