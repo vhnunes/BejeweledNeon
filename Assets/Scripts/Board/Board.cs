@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -133,15 +133,19 @@ namespace BJW
                     gemIndex++;
                 }
             }
-            
-            var matches = GetAllMatchsInBoard();
-            while (matches.Length > 0)
+
+            if (_canStartWitchMatches)
             {
-                var firstGemOnMatch = matches[0].gems[0];
+                var matches = GetAllMatchsInBoard();
+                while (matches.Length > 0)
+                {
+                    var firstGemOnMatch = matches[0].gems[0];
                 
-                SetGemToAnother(firstGemOnMatch, true);
-                matches = GetAllMatchsInBoard();
+                    SetGemToAnother(firstGemOnMatch, true);
+                    matches = GetAllMatchsInBoard();
+                }
             }
+            
         }
         private void FallAllGemsFromPosition(Vector2 boardPosition, int amount = 1)
         {
