@@ -1,14 +1,21 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace BJW
 {
+    [Serializable]
     public class ScoreManager
     {
         #region Variables
 
         [SerializeField] private float _currentScore = 0;
-        [SerializeField] private float _highScore = 0;
+        private float _highScore = 0;
 
+        [Header("Score Reward")] 
+        [SerializeField] private float _normalGemReward;
+        [SerializeField] private float _rareGemReward;
+        [SerializeField] private float _superRareGemReward;
+        
         private const string SAVE_KEY = "High Score";
 
         #region Properties
@@ -29,20 +36,30 @@ namespace BJW
 
         #region Methods
         
-        public void AddGemScore(Gem gem, int multiplier)
+        public void AddGemScore(Gem gem, float multiplier = 1f)
         {
             // Add score based on gem type.
             if (gem.gemType == GemType.Normal)
             {
-                AddScore(100);
+                AddScore(_normalGemReward * multiplier);
+            }
+            
+            else if (gem.gemType == GemType.Rare)
+            {
+                AddScore(_rareGemReward * multiplier);
+            }
+            
+            else if (gem.gemType == GemType.SuperRare)
+            {
+                AddScore(_superRareGemReward * multiplier);
             }
         }
         
         private void AddScore(float amount)
         {
             _currentScore += amount;
-            UpdateScoreView();
             TryToSetHighScore();
+            UpdateScoreView();
         }
         private void TryToSetHighScore()
         {
@@ -62,10 +79,14 @@ namespace BJW
             PlayerPrefs.SetFloat(SAVE_KEY, _highScore);
         }
 
-        private void LoadData()
+        public void LoadData()
         {
             if (PlayerPrefs.HasKey(SAVE_KEY))
+            {
                 _highScore = PlayerPrefs.GetFloat(SAVE_KEY);
+                UpdateHighScoreView();
+            }
+                
         }
 
         #endregion

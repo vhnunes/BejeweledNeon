@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     #region Components
 
     [SerializeField] private BoardManager _boardManager = new BoardManager();
-    private ScoreManager _scoreManager = new ScoreManager();
+    [SerializeField] private ScoreManager _scoreManager = new ScoreManager();
     private GemControl _gemControl = null;
 
     #region Properties
@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         InitializeBoardManager();
-        
+        InitializeScoreManager();
         InitializeGemControl();
     }
 
@@ -65,12 +65,14 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
     }
-
     private void InitializeBoardManager()
     {
         _boardManager.OnStart();
     }
-
+    private void InitializeScoreManager()
+    {
+        scoreManager.LoadData();
+    }
     private void InitializeGemControl()
     {
         _gemControl = new GemControl(_boardManager.board);

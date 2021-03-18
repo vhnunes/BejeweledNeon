@@ -308,7 +308,6 @@ namespace BJW
             // On Match
             DoMatch(match);
         }
-        
         private GemMatch[] GetAllMatchsInBoard()
         {
             // The ideia is to star checkin in first position of board, after
@@ -433,7 +432,6 @@ namespace BJW
 
             return definitiveMatch;
         }
-
         private GemMatch HorizontalMatchOfGem(Gem gem, Vector2 gemPosition)
         {
             GemMatch match = new GemMatch();

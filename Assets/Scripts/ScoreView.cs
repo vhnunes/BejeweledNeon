@@ -9,7 +9,7 @@ namespace BJW
     {
         #region Variables
 
-        private const string _textFormat = "000000";
+        private const string _textFormat = "0";
         private enum ViewType
         {
             Score, HighScore
@@ -73,8 +73,8 @@ namespace BJW
 
             else
             {
-                
-            }_myText.text = _scoreManager.highScore.ToString(_textFormat);
+                _myText.text = _scoreManager.highScore.ToString(_textFormat);
+            }
         }
 
         #endregion

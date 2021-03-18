@@ -80,7 +80,7 @@ namespace BJW
         public void OnMatchEnd()
         { 
             _gemView.SetMatchAnimation(false);
-            //_gemState = GemState.Dead;
+            GameManager.instance.scoreManager.AddGemScore(this);
         }
         public void OnSelected()
         {
