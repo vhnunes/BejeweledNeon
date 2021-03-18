@@ -33,6 +33,11 @@ public class GameManager : MonoBehaviour
         InitializeGemControl();
     }
 
+    private void Update()
+    {
+        _boardManager.OnUpdate();
+    }
+
     #endregion
 
     #region Methods

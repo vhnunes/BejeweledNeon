@@ -16,6 +16,10 @@ namespace BJW
         private GemData[] _gemsDataAvaliable;
         private Gem[] _gemsInGame;
         private List<GemMatch> _gemMatches = new List<GemMatch>();
+        
+        private float _gemMatchAnimTime = 0.5f;
+        private float _gemSwitchTime = 0.5f;
+        private float _boardAfterMatchDelay = 1f;
 
         #region Properties
 
@@ -46,6 +50,13 @@ namespace BJW
         {
             _boardState = newState;
         }
+
+        public void SetTimings(float matchAnimTime, float switchTime, float boardMatchDelay)
+        {
+            _gemMatchAnimTime = matchAnimTime;
+            _gemSwitchTime = switchTime;
+            _boardAfterMatchDelay = boardMatchDelay;
+        }
         
         #region Gems
         
@@ -68,11 +79,19 @@ namespace BJW
             
             // TODO: Better way to use start coroutine without need for singleton? Can have a refence in this class...
             GameManager.instance.StartCoroutine(isSwitchLegal
-                ? OnLegalGemSwitchRoutine(1f, firstGemMatch, secondGemMatch)
-                : OnIlegalSwitchRoutine(1f, firstGem, secondGem));
+                ? OnLegalGemSwitchRoutine(firstGemMatch, secondGemMatch)
+                : OnIlegalSwitchRoutine(firstGem, secondGem));
         }
 
-        private IEnumerator OnLegalGemSwitchRoutine(float timeToWait, GemMatch firstGemMatch, GemMatch secondGemMatch)
+        public void SetAllGemsSpeeds(float speed)
+        {
+            foreach (var gem in gemsInGame)
+            {
+                gem.SetViewSpeed(speed);
+            }
+        }
+
+        private IEnumerator OnLegalGemSwitchRoutine(GemMatch firstGemMatch, GemMatch secondGemMatch)
         {
             GemMatch allGemsMatch = new GemMatch();
             foreach (var gem in firstGemMatch.gems)
@@ -84,27 +103,31 @@ namespace BJW
                 allGemsMatch.AddGem(gem);
             }
 
-            var mainRoutine = GameManager.instance.StartCoroutine(MatchGemRoutine(allGemsMatch, timeToWait));
+            var mainRoutine = GameManager.instance.StartCoroutine(MatchGemRoutine(allGemsMatch));
             yield return mainRoutine;
+            yield return new WaitForSeconds(_boardAfterMatchDelay);
             
             // Do all other matches that can have in board.
             var boardMatches = GetAllMatchsInBoard();
             while (boardMatches.Length > 0)
             {
-                var otherRoutines = GameManager.instance.StartCoroutine(MatchGemRoutine(boardMatches[0], timeToWait));
+                // TODO: Make all other occurs at the same time
+                var otherRoutines = GameManager.instance.StartCoroutine(MatchGemRoutine(boardMatches[0]));
                 yield return otherRoutines;
                 boardMatches = GetAllMatchsInBoard();
-                yield return new WaitForSeconds(timeToWait);
+                yield return new WaitForSeconds(_boardAfterMatchDelay);
             }
             
             ChangeBoardState(BoardState.Playing);
 
         }
-        private IEnumerator OnIlegalSwitchRoutine(float timeToWait, Gem firstGem, Gem secondGem)
+        private IEnumerator OnIlegalSwitchRoutine(Gem firstGem, Gem secondGem)
         {
-            yield return new WaitForSeconds(timeToWait);
+            var halfSwitchTime = _gemSwitchTime * 0.5f;
+            
+            yield return new WaitForSeconds(halfSwitchTime);
             SwitchGems(firstGem, secondGem);
-            yield return new WaitForSeconds(timeToWait);
+            yield return new WaitForSeconds(halfSwitchTime);
             ChangeBoardState(BoardState.Playing);
         }
 
@@ -221,35 +244,19 @@ namespace BJW
                 FallAllGemsFromPosition(hGem.boardPosition + Vector2.up);
                 SendGemToTop(hGem);
             }
-            
-            // TODO: After match check board for other matches decurred of this match.
-            //DoAllMatchesInBoard();
-        }
-        private void DoAllMatchesInBoard()
-        {
-            var matchesInBoard = GetAllMatchsInBoard();
-            foreach (var match in matchesInBoard)
-            {
-                DoMatch(match);
-            }
         }
 
-        private IEnumerator MatchGemRoutine(GemMatch match, float timeToWait)
+        private IEnumerator MatchGemRoutine(GemMatch match)
         {
             // Pre Match
             foreach (var gem in match.gems)
             {
                 gem.OnMatchStart();
             }
-            yield return new WaitForSeconds(timeToWait);
+            yield return new WaitForSeconds(_gemMatchAnimTime);
             
             // On Match
             DoMatch(match);
-
-            yield return new WaitForSeconds(timeToWait);
-            
-            // After Match
-            ChangeBoardState(BoardState.Playing);
         }
         
         private GemMatch[] GetAllMatchsInBoard()

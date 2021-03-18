@@ -6,6 +6,12 @@ using UnityEngine;
 
 public class GemView : MonoBehaviour
 {
+    #region Variables
+
+    private float _moveSpeed = 20f;
+
+    #endregion
+    
     #region Components
 
     [SerializeField] private GemData _gemData = null;
@@ -54,14 +60,15 @@ public class GemView : MonoBehaviour
         
         while (this.transform.position != targetPosition)
         {
-            yield return new WaitForSeconds(0.01f);
-            this.transform.position = Vector3.MoveTowards(this.transform.position, targetPosition, 0.1f);
+            this.transform.position = Vector3.MoveTowards(this.transform.position, targetPosition, 
+                _moveSpeed * Time.deltaTime);
+            yield return new WaitForEndOfFrame();
         }
     }
 
-    public void DisableView()
+    public void SetMoveSpeed(float newSpeed)
     {
-        _renderer.enabled = false;
+        _moveSpeed = newSpeed;
     }
     public void MoveToBoardPosition()
     {

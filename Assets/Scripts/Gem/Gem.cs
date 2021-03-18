@@ -58,13 +58,20 @@ namespace BJW
             _gemView.SetGem(this);
             _gemView.SetGemData(_gemData);
         }
-        
         public void SetBoardPosition(Vector2 newPosition)
         {
             _boardPosition = newPosition;
             _gemView.MoveToBoardPosition();
         }
-        
+
+        public void SetViewSpeed(float speed)
+        {
+            _gemView.SetMoveSpeed(speed);
+        }
+
+
+        #region On States
+
         public void OnMatchStart()
         {
             _gemView.SetMatchAnimation(true);
@@ -82,6 +89,8 @@ namespace BJW
         {
             _gemView.SetSelectedAnimation(false);
         }
+
+        #endregion
 
         public bool IsCompatibleWith(Gem other)
         {

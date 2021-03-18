@@ -10,6 +10,14 @@ namespace BJW
         [SerializeField] private bool canStartWitchMatches = false;
         [SerializeField] private int _boardRowSize = 8;
         [SerializeField] private int _boardCollumSize = 8;
+
+        [Header("Speed")]
+        [SerializeField] private float _gemMoveSpeed = 20f;
+
+        [Header("Timings")] 
+        [SerializeField] private float _gemMatchAnimTime = 0.5f;
+        [SerializeField] private float _gemSwitchTime = 0.5f;
+        [SerializeField] private float _boardAfterMatchDelay = 1f;
         
         #endregion
         
@@ -32,7 +40,11 @@ namespace BJW
         {
             InitializeBoard();
         }
-    
+
+        public void OnUpdate()
+        {
+            _board.SetAllGemsSpeeds(_gemMoveSpeed);
+        }
         public void OnGizmos()
         {
             DrawBoardGizmosPreview();
@@ -41,6 +53,7 @@ namespace BJW
         private void InitializeBoard()
         {
             _board = new Board(_boardRowSize, _boardCollumSize, _gemCollectionToUse.gemDatas, canStartWitchMatches);
+            _board.SetTimings(_gemMatchAnimTime, _gemSwitchTime, _boardAfterMatchDelay);
         }
     
         #region Gizmos
