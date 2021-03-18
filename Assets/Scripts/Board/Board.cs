@@ -6,6 +6,8 @@ namespace BJW
 {
     public class Board
     {
+        // TODO: IMPROVE GAME MANAGER REFERENCE TO CALL ROUTINES
+        
         #region Variables
 
         private bool _canStartWitchMatches = false;
@@ -111,11 +113,24 @@ namespace BJW
             var boardMatches = GetAllMatchsInBoard();
             while (boardMatches.Length > 0)
             {
-                // TODO: Make all other occurs at the same time
-                var otherRoutines = GameManager.instance.StartCoroutine(MatchGemRoutine(boardMatches[0]));
-                yield return otherRoutines;
-                boardMatches = GetAllMatchsInBoard();
+                // Do first other match im board.
+                var firstOtherMatch = boardMatches[0];
+                var otherFirstRoutine =  GameManager.instance.StartCoroutine(MatchGemRoutine(firstOtherMatch));
+                
+                // Start all other matches at the same time if have.
+                if (boardMatches.Length > 1)
+                {
+                    for (int i = 1; i < boardMatches.Length; i++)
+                    {
+                        var match = boardMatches[i];
+                        GameManager.instance.StartCoroutine(MatchGemRoutine(match));
+                    }
+                }
+
+                // Wait for any match to stop, (all matches have the same time)
+                yield return otherFirstRoutine;
                 yield return new WaitForSeconds(_boardAfterMatchDelay);
+                boardMatches = GetAllMatchsInBoard();
             }
             
             ChangeBoardState(BoardState.Playing);
