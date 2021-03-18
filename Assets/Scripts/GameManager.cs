@@ -9,9 +9,15 @@ public class GameManager : MonoBehaviour
     #region Components
 
     [SerializeField] private BoardManager _boardManager = new BoardManager();
-    
+    private ScoreManager _scoreManager = new ScoreManager();
     private GemControl _gemControl = null;
 
+    #region Properties
+
+    public ScoreManager scoreManager => _scoreManager;
+
+    #endregion
+    
     #endregion
 
     #region MonoBehaviour
