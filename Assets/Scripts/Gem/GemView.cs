@@ -29,9 +29,15 @@ public class GemView : MonoBehaviour
         InitializeCollider();
     }
 
-    private void OnMouseDown()
+    private void OnMouseOver()
     {
-        _gem.OnClick?.Invoke();
+        if (Input.GetMouseButtonDown(0))
+        {
+            _gem.OnClick?.Invoke();
+        }
+        
+        else if (Input.GetMouseButton(0))
+            _gem.OnMouseOver?.Invoke();
     }
 
     #endregion

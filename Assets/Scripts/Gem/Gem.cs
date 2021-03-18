@@ -34,6 +34,7 @@ namespace BJW
         #region Events / Actions
 
         public Action OnClick;
+        public Action OnMouseOver;
 
         #endregion
 

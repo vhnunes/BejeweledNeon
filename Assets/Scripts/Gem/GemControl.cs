@@ -27,6 +27,7 @@ namespace BJW
             foreach (var gem in _board.gemsInGame)
             {
                 gem.OnClick = () => OnGemClick(gem);
+                gem.OnMouseOver = () => OnGemMouseOver(gem);
             }
         }
         private void OnGemClick(Gem gem)
@@ -41,6 +42,33 @@ namespace BJW
             }
             
             else if (_board.boardState == BoardState.GemSelected)
+            {
+                _secondSelectedGem = gem;
+
+                if (CanSwitchGems())
+                {
+                    _board.SwitchGems(_firstSelectedGem, _secondSelectedGem);
+                    _board.OnSwitchGems(_firstSelectedGem, _secondSelectedGem);
+                    
+                    UnselectAllGems();
+                }
+
+                else
+                {
+                    UnselectAllGems();
+                    // TODO: Improve board state changes(?)
+                    _board.ChangeBoardState(BoardState.Playing);
+                }
+                    
+            }
+        }
+        
+        private void OnGemMouseOver(Gem gem)
+        {
+            if (!CanInteractWithGem()) return;
+            if (_firstSelectedGem == gem) return;
+
+            if (_board.boardState == BoardState.GemSelected)
             {
                 _secondSelectedGem = gem;
 
