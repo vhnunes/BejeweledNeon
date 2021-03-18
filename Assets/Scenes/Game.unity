@@ -243,6 +243,11 @@ MonoBehaviour:
     _boardAfterMatchDelay: 1
     _gemCollectionToUse: {fileID: 11400000, guid: 7caf74af30e5c22419b0f6e12c586595,
       type: 2}
+  _scoreManager:
+    _currentScore: 0
+    _normalGemReward: 100
+    _rareGemReward: 250
+    _superRareGemReward: 500
 --- !u!4 &93120214
 Transform:
   m_ObjectHideFlags: 0
