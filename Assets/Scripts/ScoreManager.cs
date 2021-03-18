@@ -84,7 +84,6 @@ namespace BJW
             if (PlayerPrefs.HasKey(SAVE_KEY))
             {
                 _highScore = PlayerPrefs.GetFloat(SAVE_KEY);
-                UpdateHighScoreView();
             }
                 
         }
