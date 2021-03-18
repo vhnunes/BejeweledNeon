@@ -74,8 +74,8 @@ namespace BJW
         {
             ChangeBoardState(BoardState.Waiting);
             
-            var firstGemMatch = MatchInGem(firstGem);
-            var secondGemMatch = MatchInGem(secondGem);
+            var firstGemMatch = MatchInGem(firstGem, firstGem.boardPosition);
+            var secondGemMatch = MatchInGem(secondGem, firstGem.boardPosition);
 
             var isSwitchLegal = firstGemMatch.IsMatch() || secondGemMatch.IsMatch();
             
@@ -179,7 +179,6 @@ namespace BJW
                     matches = GetAllMatchsInBoard();
                 }
             }
-            
         }
         private void FallAllGemsFromPosition(Vector2 boardPosition, int amount = 1)
         {
@@ -247,6 +246,125 @@ namespace BJW
 
         #region Match
 
+        public int PossibleMovementsToMakeMatch()
+        {
+            int result = 0;
+            foreach (var gem in gemsInGame)
+            {
+                if (CanMakeAnyMatch(gem))
+                    result++;
+            }
+            
+            Debug.Log($"Possible match movements in game: {result}");
+            return result;
+        }
+        private bool CanMakeAnyMatch(Gem gem)
+        {
+            // Check if this gem can make any match in the baord.
+
+            // Check in all positions in each diretion for possible matches if switch to this position.
+
+            // Check Right
+            var canMakeAtRight = MatchInGem(gem, gem.boardPosition + Vector2.right).IsMatch();
+            if (canMakeAtRight) return true;
+
+            // Check Left
+            var canMakeAtLeft = MatchInGem(gem, gem.boardPosition - Vector2.right).IsMatch();;
+            if (canMakeAtLeft) return true;
+            
+            // Check Up
+            var canMakeAtUp = MatchInGem(gem, gem.boardPosition + Vector2.up).IsMatch();;
+            if (canMakeAtUp) return true;
+
+            // Check Down
+            var canMakeAtDown = MatchInGem(gem, gem.boardPosition - Vector2.up).IsMatch();;
+            if (canMakeAtDown) return true;
+
+            return false;
+        }
+
+        private bool CanMakeMatchAtRight(Gem gem, Vector2 gemPosition)
+        {
+            var canGoNextPosition = gemPosition.x + 1 < _rowSize;
+            if (canGoNextPosition)
+            {
+                var canHaveGemsAfterPosition = (gemPosition.x + 2 < _rowSize) && (gemPosition.x + 3 < _rowSize);
+                if (canHaveGemsAfterPosition)
+                {
+                    var nextGemAfter = GetGemInPosition(gemPosition + new Vector2(2,0));
+                    var nextGemAfterAfter = GetGemInPosition(gemPosition + new Vector2(3, 0));
+                    var isCompatible =
+                        (nextGemAfter != null && nextGemAfterAfter != null)
+                        && ( gem.IsCompatibleWith(nextGemAfter) && gem.IsCompatibleWith(nextGemAfterAfter));
+                    if (isCompatible)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+        private bool CanMakeMatchAtLeft(Gem gem, Vector2 gemPosition)
+        {
+            var canGoNextPosition = gemPosition.x - 1 > -1;
+            if (canGoNextPosition)
+            {
+                var canHaveGemsAfterPosition = (gemPosition.x - 2 > -1) && (gemPosition.x - 3 > -1);
+                if (canHaveGemsAfterPosition)
+                {
+                    var nextGemAfter = GetGemInPosition(gemPosition + new Vector2(-2,0));
+                    var nextGemAfterAfter = GetGemInPosition(gemPosition + new Vector2(-3, 0));
+                    var isCompatible =
+                        (nextGemAfter != null && nextGemAfterAfter != null)
+                        && ( gem.IsCompatibleWith(nextGemAfter) && gem.IsCompatibleWith(nextGemAfterAfter));
+                    
+                    if (isCompatible)
+                        return true;
+                }
+            }
+            
+            return false;
+        }
+        private bool CanMakeMatchAtUp(Gem gem, Vector2 gemPosition)
+        {
+            var canGoNextPosition = gemPosition.y + 1 < _collumSize;
+            if (canGoNextPosition)
+            {
+                var canHaveGemsAfterPosition = (gemPosition.y + 2 < _collumSize) && (gemPosition.y + 3 < _collumSize);
+                if (canHaveGemsAfterPosition)
+                {
+                    var nextGemAfter = GetGemInPosition(gemPosition + new Vector2(0,2));
+                    var nextGemAfterAfter = GetGemInPosition(gemPosition + new Vector2(0, 3));
+                    var isCompatible =
+                        (nextGemAfter != null && nextGemAfterAfter != null)
+                        && ( gem.IsCompatibleWith(nextGemAfter) && gem.IsCompatibleWith(nextGemAfterAfter));
+                    if (isCompatible)
+                        return true;
+                }
+            }
+            
+            return false;
+        }
+        private bool CanMakeMatchAtDown(Gem gem, Vector2 gemPosition)
+        {
+            var canGoNextPosition = gemPosition.y - 1 > -1;
+            if (canGoNextPosition)
+            {
+                var canHaveGemsAfterPosition = (gemPosition.y - 2 > -1) && (gemPosition.y - 3 > -1);
+                if (canHaveGemsAfterPosition)
+                {
+                    var nextGemAfter = GetGemInPosition(gemPosition + new Vector2(0,-2));
+                    var nextGemAfterAfter = GetGemInPosition(gemPosition + new Vector2(0, -3));
+                    var isCompatible =
+                        (nextGemAfter != null && nextGemAfterAfter != null)
+                        && ( gem.IsCompatibleWith(nextGemAfter) && gem.IsCompatibleWith(nextGemAfterAfter));
+                    if (isCompatible)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         private void DoMatch(GemMatch match)
         {
             bool isMatchLegal = match.IsMatch();
@@ -260,7 +378,6 @@ namespace BJW
                 SendGemToTop(hGem);
             }
         }
-
         private IEnumerator MatchGemRoutine(GemMatch match)
         {
             // Pre Match
@@ -362,7 +479,7 @@ namespace BJW
             foreach (var position in positionsToCheck)
             {
                 var gem = GetGemInPosition(position);
-                var match = MatchInGem(gem);
+                var match = MatchInGem(gem, gem.boardPosition);
                 if (match.IsMatch())
                     boardMatchs.Add(match);
             }
@@ -370,12 +487,12 @@ namespace BJW
             Debug.Log($"The board has {boardMatchs.Count} match 3 ocurring.");
             return boardMatchs.ToArray();
         }
-        private GemMatch MatchInGem(Gem gem)
+        private GemMatch MatchInGem(Gem gem, Vector2 gemPosition)
         {
-            GemMatch horizontalMatch = HorizontalMatchOfGem(gem);
+            GemMatch horizontalMatch = HorizontalMatchOfGem(gem, gemPosition);
             horizontalMatch.AddGem(gem);
             
-            GemMatch verticalMatch = VerticalMatchOfGem(gem);
+            GemMatch verticalMatch = VerticalMatchOfGem(gem, gemPosition);
             verticalMatch.AddGem(gem);
 
             GemMatch definitiveMatch = new GemMatch();
@@ -398,7 +515,8 @@ namespace BJW
 
             return definitiveMatch;
         }
-        private GemMatch HorizontalMatchOfGem(Gem gem)
+
+        private GemMatch HorizontalMatchOfGem(Gem gem, Vector2 gemPosition)
         {
             GemMatch match = new GemMatch();
             
@@ -406,12 +524,12 @@ namespace BJW
             Gem nextGem = null;
 
             // Right
-            nextGemPosition = gem.boardPosition + Vector2.right;
+            nextGemPosition = gemPosition + Vector2.right;
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
                 
-                if (nextGem.IsCompatibleWith(gem))
+                if (nextGem.IsCompatibleWith(gem) && nextGem != gem)
                 {
                     match.AddGem(nextGem);
                     nextGemPosition += Vector2.right;
@@ -422,12 +540,12 @@ namespace BJW
             }
             
             // Left
-            nextGemPosition = gem.boardPosition + Vector2.left;
+            nextGemPosition = gemPosition + Vector2.left;
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
                 
-                if (nextGem.IsCompatibleWith(gem))
+                if (nextGem.IsCompatibleWith(gem) && nextGem != gem)
                 {
                     match.AddGem(nextGem);
                     nextGemPosition += Vector2.left;
@@ -439,7 +557,7 @@ namespace BJW
             
             return match;
         }
-        private GemMatch VerticalMatchOfGem(Gem gem)
+        private GemMatch VerticalMatchOfGem(Gem gem, Vector2 gemPosition)
         {
             GemMatch match = new GemMatch();
 
@@ -447,12 +565,12 @@ namespace BJW
             Gem nextGem = null;
 
             // Up
-            nextGemPosition = gem.boardPosition + Vector2.up;
+            nextGemPosition = gemPosition + Vector2.up;
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
 
-                if (nextGem.IsCompatibleWith(gem))
+                if (nextGem.IsCompatibleWith(gem) && nextGem != gem)
                 {
                     match.AddGem(nextGem);
                     nextGemPosition += Vector2.up;
@@ -463,12 +581,12 @@ namespace BJW
             }
             
             // Down
-            nextGemPosition = gem.boardPosition + Vector2.down;
+            nextGemPosition = gemPosition + Vector2.down;
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
 
-                if (nextGem.IsCompatibleWith(gem))
+                if (nextGem.IsCompatibleWith(gem) && nextGem != gem)
                 {
                     match.AddGem(nextGem);
                     nextGemPosition += Vector2.down;
