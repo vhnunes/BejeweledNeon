@@ -304,19 +304,19 @@ namespace BJW
             // Check in all positions in each diretion for possible matches if switch to this position.
 
             // Check Right
-            var canMakeAtRight = MatchInGem(gem, gem.boardPosition + Vector2.right).IsMatch();
+            var canMakeAtRight = MatchInGem(gem, gem.boardPosition + Vector2.right, false).IsMatch();
             if (canMakeAtRight) return true;
 
             // Check Left
-            var canMakeAtLeft = MatchInGem(gem, gem.boardPosition - Vector2.right).IsMatch();;
+            var canMakeAtLeft = MatchInGem(gem, gem.boardPosition - Vector2.right, false).IsMatch();;
             if (canMakeAtLeft) return true;
             
             // Check Up
-            var canMakeAtUp = MatchInGem(gem, gem.boardPosition + Vector2.up).IsMatch();;
+            var canMakeAtUp = MatchInGem(gem, gem.boardPosition + Vector2.up, false).IsMatch();;
             if (canMakeAtUp) return true;
 
             // Check Down
-            var canMakeAtDown = MatchInGem(gem, gem.boardPosition - Vector2.up).IsMatch();;
+            var canMakeAtDown = MatchInGem(gem, gem.boardPosition - Vector2.up, false).IsMatch();;
             if (canMakeAtDown) return true;
 
             return false;
@@ -443,12 +443,12 @@ namespace BJW
             Debug.Log($"The board has {boardMatchs.Count} match 3 ocurring.");
             return boardMatchs.ToArray();
         }
-        private GemMatch MatchInGem(Gem gem, Vector2 gemPosition)
+        private GemMatch MatchInGem(Gem gem, Vector2 gemPosition, bool canCheckSelf = true)
         {
-            GemMatch horizontalMatch = HorizontalMatchOfGem(gem, gemPosition);
+            GemMatch horizontalMatch = HorizontalMatchOfGem(gem, gemPosition, canCheckSelf);
             horizontalMatch.AddGem(gem);
             
-            GemMatch verticalMatch = VerticalMatchOfGem(gem, gemPosition);
+            GemMatch verticalMatch = VerticalMatchOfGem(gem, gemPosition, canCheckSelf);
             verticalMatch.AddGem(gem);
 
             GemMatch definitiveMatch = new GemMatch();
@@ -471,7 +471,7 @@ namespace BJW
 
             return definitiveMatch;
         }
-        private GemMatch HorizontalMatchOfGem(Gem gem, Vector2 gemPosition)
+        private GemMatch HorizontalMatchOfGem(Gem gem, Vector2 gemPosition, bool canCheckSelf = true)
         {
             GemMatch match = new GemMatch();
             
@@ -483,8 +483,11 @@ namespace BJW
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
+                bool isCompatible = nextGem.IsCompatibleWith(gem);
+                if (!canCheckSelf && nextGem == gem)
+                    isCompatible = false;
                 
-                if (nextGem.IsCompatibleWith(gem) && nextGem != gem)
+                if (isCompatible)
                 {
                     match.AddGem(nextGem);
                     nextGemPosition += Vector2.right;
@@ -499,8 +502,11 @@ namespace BJW
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
+                bool isCompatible = nextGem.IsCompatibleWith(gem);
+                if (!canCheckSelf && nextGem == gem)
+                    isCompatible = false;
                 
-                if (nextGem.IsCompatibleWith(gem) && nextGem != gem)
+                if (isCompatible)
                 {
                     match.AddGem(nextGem);
                     nextGemPosition += Vector2.left;
@@ -512,7 +518,7 @@ namespace BJW
             
             return match;
         }
-        private GemMatch VerticalMatchOfGem(Gem gem, Vector2 gemPosition)
+        private GemMatch VerticalMatchOfGem(Gem gem, Vector2 gemPosition, bool canCheckSelf = true)
         {
             GemMatch match = new GemMatch();
 
@@ -524,8 +530,11 @@ namespace BJW
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
-
-                if (nextGem.IsCompatibleWith(gem) && nextGem != gem)
+                bool isCompatible = nextGem.IsCompatibleWith(gem);
+                if (!canCheckSelf && nextGem == gem)
+                    isCompatible = false;
+                
+                if (isCompatible)
                 {
                     match.AddGem(nextGem);
                     nextGemPosition += Vector2.up;
@@ -540,8 +549,11 @@ namespace BJW
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
-
-                if (nextGem.IsCompatibleWith(gem) && nextGem != gem)
+                bool isCompatible = nextGem.IsCompatibleWith(gem);
+                if (!canCheckSelf && nextGem == gem)
+                    isCompatible = false;
+                
+                if (isCompatible)
                 {
                     match.AddGem(nextGem);
                     nextGemPosition += Vector2.down;
