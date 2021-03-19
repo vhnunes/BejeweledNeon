@@ -16,4 +16,4 @@ MonoBehaviour:
   _gemPrefab: {fileID: 4411876790893098845, guid: ded6ee947abc7a147b6ad7f2dd2fb617,
     type: 3}
   _gemSprite: {fileID: 21300000, guid: 7d10225c8701b994c8aabdbaa0b72e1e, type: 3}
-  _gemColor: {r: 0, g: 0.6388259, b: 1, a: 1}
+  _gemColor: {r: 0.27416337, g: 0.7081408, b: 0.9528302, a: 1}
