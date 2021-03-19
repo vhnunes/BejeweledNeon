@@ -5,11 +5,22 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+
+    #region Events
+
+    public delegate void OnGameOverEvents();
+    public OnGameOverEvents OnGameOver;
+
+    public delegate void OnGameRestartEvents();
+    public OnGameOverEvents OnGameRestart;
+
+    #endregion
     
     #region Components
 
     [SerializeField] private BoardManager _boardManager = new BoardManager();
     [SerializeField] private ScoreManager _scoreManager = new ScoreManager();
+    [SerializeField] private UIManager _uiManager = new UIManager();
     private GemControl _gemControl = null;
 
     #region Properties
@@ -36,10 +47,13 @@ public class GameManager : MonoBehaviour
     {
         InitializeBoardManager();
         InitializeScoreManager();
+        InitializeUIManager();
         InitializeGemControl();
+        
+        InvokeRepeating(nameof(InvokeUpdate), .1f, .1f);
     }
 
-    private void Update()
+    private void InvokeUpdate()
     {
         _boardManager.OnUpdate();
     }
@@ -47,6 +61,8 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Methods
+
+    #region Initialization
 
     private void InitializeSingleton()
     {
@@ -71,12 +87,35 @@ public class GameManager : MonoBehaviour
     }
     private void InitializeScoreManager()
     {
-        scoreManager.LoadData();
+        scoreManager.OnStart();
+    }
+    private void InitializeUIManager()
+    {
+        _uiManager.OnStart();
     }
     private void InitializeGemControl()
     {
         _gemControl = new GemControl(_boardManager.board);
     }
+
+    #endregion
+
+    #region CallBacks
+    
+    // TODO: Centralize callbacks here?
+    
+    public void GameOver()
+    {
+        OnGameOver?.Invoke();
+        Invoke(nameof(RestartGame), 5f);
+    }
+    
+    private void RestartGame()
+    {
+        OnGameRestart?.Invoke();
+    }
+
+    #endregion
 
     #endregion
 }

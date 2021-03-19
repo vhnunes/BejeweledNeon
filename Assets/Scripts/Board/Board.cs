@@ -32,6 +32,12 @@ namespace BJW
 
         #endregion
 
+        #region Components
+
+        private GameManager _gameManager = null;
+
+        #endregion
+
         #region Methods
         
         // Constructor
@@ -44,20 +50,43 @@ namespace BJW
 
             _gemsDataAvaliable = gemsDataToUseInGame;
             _gemsInGame = new Gem[rowSize * collumSize];
-
-            InitializeGems();
-            PlaceGemsOnBoard();
         }
         public void ChangeBoardState(BoardState newState)
         {
             _boardState = newState;
         }
 
+        public void OnStart()
+        {
+            _gameManager = GameManager.instance;
+            _gameManager.OnGameRestart += () => ChangeBoardState(BoardState.Playing);
+            _gameManager.OnGameRestart += ResetAllGems;
+            InitializeGems();
+            PlaceGemsOnBoard();
+            TryGameOver();
+        }
+        
         public void SetTimings(float matchAnimTime, float switchTime, float boardMatchDelay)
         {
             _gemMatchAnimTime = matchAnimTime;
             _gemSwitchTime = switchTime;
             _boardAfterMatchDelay = boardMatchDelay;
+        }
+
+        private bool TryGameOver()
+        {
+            var movementsLeft = PossibleMovementsToMakeMatch();
+            if (movementsLeft == 0)
+            {
+                ChangeBoardState(BoardState.Waiting);
+                
+                GameManager.instance.GameOver();
+                
+                return true;
+            }
+                
+            
+            return false;
         }
         
         #region Gems
@@ -134,6 +163,7 @@ namespace BJW
             }
             
             ChangeBoardState(BoardState.Playing);
+            TryGameOver();
 
         }
         private IEnumerator OnIlegalSwitchRoutine(Gem firstGem, Gem secondGem)
@@ -152,6 +182,14 @@ namespace BJW
             {
                 var sortGemData = GetRandomGemData();
                 _gemsInGame[i] = new Gem(sortGemData);
+            }
+        }
+
+        public void ResetAllGems()
+        {
+            foreach (var gem in gemsInGame)
+            {
+                gem.TransformIntoNewGem(GetRandomGemData());
             }
         }
         private void PlaceGemsOnBoard()
@@ -180,6 +218,7 @@ namespace BJW
                 }
             }
         }
+        
         private void FallAllGemsFromPosition(Vector2 boardPosition, int amount = 1)
         {
             // All gems from this position to up will fall

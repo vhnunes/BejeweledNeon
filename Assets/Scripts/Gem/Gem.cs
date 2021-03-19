@@ -26,7 +26,6 @@ namespace BJW
         #region Components
 
         [SerializeField] private GemData _gemData = null;
-        
         private GemView _gemView = null;
 
         #endregion
@@ -64,7 +63,6 @@ namespace BJW
             _boardPosition = newPosition;
             _gemView.MoveToBoardPosition();
         }
-
         public void SetViewSpeed(float speed)
         {
             _gemView.SetMoveSpeed(speed);

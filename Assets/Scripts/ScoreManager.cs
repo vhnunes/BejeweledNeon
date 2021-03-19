@@ -32,10 +32,30 @@ namespace BJW
         private ScoreView _scoreView = null;
         private ScoreView _highScoreView = null;
 
+        private GameManager _gameManager = null;
+
         #endregion
 
         #region Methods
-        
+
+        public void OnStart()
+        {
+            _gameManager = GameManager.instance;
+            _gameManager.OnGameRestart += ResetScore;
+            
+            LoadData();
+        }
+
+        private void ResetScore()
+        {
+            // NOT HIGH SCORE
+            _currentScore = 0;
+            UpdateScoreView();
+            UpdateHighScoreView();
+        }
+
+        #region Score
+
         public void AddGemScore(Gem gem, float multiplier = 1f)
         {
             // Add score based on gem type.
@@ -54,7 +74,6 @@ namespace BJW
                 AddScore(_superRareGemReward * multiplier);
             }
         }
-        
         private void AddScore(float amount)
         {
             _currentScore += amount;
@@ -71,6 +90,8 @@ namespace BJW
             }
                
         }
+
+        #endregion
 
         #region Save / Load
 

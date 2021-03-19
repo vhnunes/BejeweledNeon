@@ -25,7 +25,8 @@ namespace BJW
     
         [SerializeField] private GemCollectionData _gemCollectionToUse = null;
         private Board _board = null;
-
+        private GameManager _gameManager = null;
+        
         #region Properties
 
         public Board board => _board;
@@ -38,6 +39,7 @@ namespace BJW
     
         public void OnStart()
         {
+            _gameManager = GameManager.instance;
             InitializeBoard();
         }
 
@@ -54,8 +56,9 @@ namespace BJW
         {
             _board = new Board(_boardRowSize, _boardCollumSize, _gemCollectionToUse.gemDatas, canStartWitchMatches);
             _board.SetTimings(_gemMatchAnimTime, _gemSwitchTime, _boardAfterMatchDelay);
+            _board.OnStart();
         }
-    
+
         #region Gizmos
     
         public void DrawBoardGizmosPreview()

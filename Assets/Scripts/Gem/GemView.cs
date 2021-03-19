@@ -18,7 +18,15 @@ public class GemView : MonoBehaviour
 
     private Gem _gem = null;
     private SpriteRenderer _renderer = null;
+
+    #region Properties
+    
+    private GameManager _gameManager => GameManager.instance;
+    
     private Animator _animator => this.gameObject.GetComponent<Animator>();
+
+    #endregion
+    
     
     #endregion
 
@@ -27,6 +35,10 @@ public class GemView : MonoBehaviour
     private void Start()
     {
         InitializeCollider();
+        _gameManager.OnGameOver += () => SetMatchAnimation(true);
+        _gameManager.OnGameRestart += () => SetMatchAnimation(false);
+        _gameManager.OnGameRestart += GoToSpawnPosition;
+        _gameManager.OnGameRestart += MoveToBoardPosition;
     }
 
     private void OnMouseOver()

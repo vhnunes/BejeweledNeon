@@ -248,6 +248,9 @@ MonoBehaviour:
     _normalGemReward: 100
     _rareGemReward: 250
     _superRareGemReward: 500
+  _uiManager:
+    _gameTitle: {fileID: 829780201}
+    _gameOver: {fileID: 1683114998}
 --- !u!4 &93120214
 Transform:
   m_ObjectHideFlags: 0
