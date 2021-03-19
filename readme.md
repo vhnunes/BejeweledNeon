@@ -20,7 +20,8 @@ Currently iam at the day 5 and with the first MVP released, [check out here](htt
 
 ### To do
 - Clean the code and refac.
-- Doc
+- Doc.
 - Improve animations.
 - Better game loop (timer attack).
-- Special gems
+- Sounds
+- Special gems.
