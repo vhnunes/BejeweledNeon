@@ -453,7 +453,6 @@ namespace BJW
                     boardMatchs.Add(match);
             }
             
-            Debug.Log($"The board has {boardMatchs.Count} match 3 ocurring.");
             return boardMatchs.ToArray();
         }
         private GemMatch MatchInGem(Gem gem, Vector2 gemPosition, bool canCheckSelf = true)
