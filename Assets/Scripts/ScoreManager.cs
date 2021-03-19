@@ -8,13 +8,14 @@ namespace BJW
     {
         #region Variables
 
-        [SerializeField] private float _currentScore = 0;
-        private float _highScore = 0;
+        [SerializeField] private int _currentScore = 0;
+        private int _highScore = 0;
+        private const int _scoreLimit = 999999;
 
         [Header("Score Reward")] 
-        [SerializeField] private float _normalGemReward;
-        [SerializeField] private float _rareGemReward;
-        [SerializeField] private float _superRareGemReward;
+        [SerializeField] private int _normalGemReward;
+        [SerializeField] private int _rareGemReward;
+        [SerializeField] private int _superRareGemReward;
         
         private const string SAVE_KEY = "High Score";
 
@@ -56,7 +57,7 @@ namespace BJW
 
         #region Score
 
-        public void AddGemScore(Gem gem, float multiplier = 1f)
+        public void AddGemScore(Gem gem, int multiplier = 1)
         {
             // Add score based on gem type.
             if (gem.gemType == GemType.Normal)
@@ -73,8 +74,11 @@ namespace BJW
             {
                 AddScore(_superRareGemReward * multiplier);
             }
+
+            if (_currentScore > _scoreLimit)
+                _currentScore = _scoreLimit;
         }
-        private void AddScore(float amount)
+        private void AddScore(int amount)
         {
             _currentScore += amount;
             TryToSetHighScore();
@@ -97,14 +101,14 @@ namespace BJW
 
         private void SaveData()
         {
-            PlayerPrefs.SetFloat(SAVE_KEY, _highScore);
+            PlayerPrefs.SetInt(SAVE_KEY, _highScore);
         }
 
         public void LoadData()
         {
             if (PlayerPrefs.HasKey(SAVE_KEY))
             {
-                _highScore = PlayerPrefs.GetFloat(SAVE_KEY);
+                _highScore = PlayerPrefs.GetInt(SAVE_KEY);
             }
                 
         }

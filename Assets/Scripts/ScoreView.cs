@@ -68,12 +68,12 @@ namespace BJW
         {
             if (_viewType == ViewType.Score)
             {
-                _myText.text = _scoreManager.currentScore.ToString(_textFormat);
+                _myText.text = _scoreManager.currentScore.ToString();
             }
 
             else
             {
-                _myText.text = _scoreManager.highScore.ToString(_textFormat);
+                _myText.text = _scoreManager.highScore.ToString();
             }
         }
 
