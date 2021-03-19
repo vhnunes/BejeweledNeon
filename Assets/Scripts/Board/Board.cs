@@ -104,7 +104,7 @@ namespace BJW
             ChangeBoardState(BoardState.Waiting);
             
             var firstGemMatch = MatchInGem(firstGem, firstGem.boardPosition);
-            var secondGemMatch = MatchInGem(secondGem, firstGem.boardPosition);
+            var secondGemMatch = MatchInGem(secondGem, secondGem.boardPosition);
 
             var isSwitchLegal = firstGemMatch.IsMatch() || secondGemMatch.IsMatch();
             
