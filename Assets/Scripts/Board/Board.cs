@@ -185,12 +185,25 @@ namespace BJW
             }
         }
 
-        public void ResetAllGems()
+        private void ResetAllGems()
         {
             foreach (var gem in gemsInGame)
             {
                 gem.TransformIntoNewGem(GetRandomGemData());
             }
+
+            if (!_canStartWitchMatches)
+            {
+                while (GetAllMatchsInBoard().Length > 0)
+                {
+                    foreach (var gem in gemsInGame)
+                    {
+                        gem.TransformIntoNewGem(GetRandomGemData());
+                    }
+                }
+            }
+
+            TryGameOver();
         }
         private void PlaceGemsOnBoard()
         {
