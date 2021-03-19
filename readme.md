@@ -1,6 +1,7 @@
 # Bejeweled Neon
 
 #### *By Victor Nunes.*
+#### Work time: 27,5hrs
 #### *Made with Unity 2019.4.19f1*
 #
 
