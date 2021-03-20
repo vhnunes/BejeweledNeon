@@ -21,6 +21,7 @@ public class GemView : MonoBehaviour
 
     private Gem _gem = null;
     private SpriteRenderer _renderer = null;
+    private ParticleSystem _particle = null;
 
     #region Properties
     
@@ -33,11 +34,19 @@ public class GemView : MonoBehaviour
     
     #endregion
 
+    #region Routines
+
+    private IEnumerator movingRoutine = null;
+
+    #endregion
+
     #region MonoBehaviour
     
     private void Start()
     {
         InitializeCollider();
+        InitializeParticle();
+        
         _gameManager.OnGameOver += () => SetMatchAnimation(true);
         _gameManager.OnGameRestart += () => SetMatchAnimation(false);
         _gameManager.OnGameRestart += GoToSpawnPosition;
@@ -63,6 +72,11 @@ public class GemView : MonoBehaviour
     {
         this.transform.position = _gem.boardPosition + (Vector2.up * 10);
     }
+
+    private void InitializeParticle()
+    {
+        _particle = this.transform.GetChild(0).GetComponent<ParticleSystem>();
+    }
     private void InitializeRenderer()
     {
         _renderer = this.gameObject.GetComponent<SpriteRenderer>();
@@ -73,6 +87,12 @@ public class GemView : MonoBehaviour
     {
         this.gameObject.AddComponent<BoxCollider2D>();
     }
+    private void SetParticleColor()
+    {
+        ParticleSystem.MainModule settings = _particle.main;
+        settings.startColor = new ParticleSystem.MinMaxGradient(_gemData.gemColor);
+    }
+    
     private IEnumerator MoveToBoardPositionRoutine()
     {
         yield return new WaitForSeconds(0.1f); // Fix any initialization race condition
@@ -87,14 +107,37 @@ public class GemView : MonoBehaviour
         }
     }
 
+    public void PlayFX()
+    {
+        SetParticleColor();
+        StartCoroutine(particleRoutine());
+        
+        // Routine needded because the particle play has a execution delay from itself, and this cause issues 
+        // when moving this gemview back to top of board
+        
+        IEnumerator particleRoutine()
+        {
+            _particle.transform.SetParent(null);
+            _particle.Play();
+            yield return _particle.isPlaying;
+            _particle.transform.SetParent(this.transform);
+            _particle.transform.localPosition = new Vector3();
+        }
+    }
     public void SetMoveSpeed(float newSpeed)
     {
         _moveSpeed = newSpeed;
     }
     public void MoveToBoardPosition()
     {
-        StopAllCoroutines();
-        StartCoroutine(MoveToBoardPositionRoutine());
+        if (movingRoutine != null)
+        {
+            StopCoroutine(movingRoutine);
+            movingRoutine = null;
+        }
+            
+        movingRoutine = MoveToBoardPositionRoutine();
+        StartCoroutine(movingRoutine);
     }
     public void SetGem(Gem newGem)
     {
@@ -113,7 +156,6 @@ public class GemView : MonoBehaviour
     {
         _animator.SetBool("isSelected", state);
     }
-
     public void SetMatchAnimation(bool state)
     {
         _animator.SetBool("isOnMatch", state);

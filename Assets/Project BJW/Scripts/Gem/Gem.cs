@@ -95,6 +95,7 @@ namespace BJW
         }
         public void OnMatchEnd()
         { 
+            _gemView.PlayFX();
             _gemView.SetMatchAnimation(false);
             GameManager.instance.score.AddGemScore(this);
         }
