@@ -7,8 +7,6 @@ namespace BJW
     [System.Serializable]
     public class Board
     {
-        // TODO: IMPROVE GAME MANAGER REFERENCE TO CALL ROUTINES
-        
         #region Variables
 
         private BoardState _boardState = BoardState.Playing;
@@ -89,7 +87,7 @@ namespace BJW
             {
                 ChangeBoardState(BoardState.Waiting);
                 
-                GameManager.instance.GameOver();
+                _gameManager.GameOver();
                 
                 return true;
             }
@@ -118,7 +116,7 @@ namespace BJW
             var isSwitchLegal = firstGemMatch.IsMatch() || secondGemMatch.IsMatch();
             
             // TODO: Better way to use start coroutine without need for singleton? Can have a refence in this class...
-            GameManager.instance.StartCoroutine(isSwitchLegal
+            _gameManager.StartCoroutine(isSwitchLegal
                 ? OnLegalGemSwitchRoutine(firstGemMatch, secondGemMatch)
                 : OnIlegalSwitchRoutine(firstGem, secondGem));
         }
@@ -143,7 +141,7 @@ namespace BJW
                 allGemsMatch.AddGem(gem);
             }
 
-            var mainRoutine = GameManager.instance.StartCoroutine(MatchGemRoutine(allGemsMatch));
+            var mainRoutine = _gameManager.StartCoroutine(MatchGemRoutine(allGemsMatch));
             yield return mainRoutine;
             yield return new WaitForSeconds(_gameManager.boardDelayAfterMatch);
             
@@ -153,7 +151,7 @@ namespace BJW
             {
                 // Do first other match im board.
                 var firstOtherMatch = boardMatches[0];
-                var otherFirstRoutine =  GameManager.instance.StartCoroutine(MatchGemRoutine(firstOtherMatch));
+                var otherFirstRoutine =  _gameManager.StartCoroutine(MatchGemRoutine(firstOtherMatch));
                 
                 // Start all other matches at the same time if have.
                 if (boardMatches.Length > 1)
@@ -161,7 +159,7 @@ namespace BJW
                     for (int i = 1; i < boardMatches.Length; i++)
                     {
                         var match = boardMatches[i];
-                        GameManager.instance.StartCoroutine(MatchGemRoutine(match));
+                        _gameManager.StartCoroutine(MatchGemRoutine(match));
                     }
                 }
 
