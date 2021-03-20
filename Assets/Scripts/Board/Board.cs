@@ -49,12 +49,9 @@ namespace BJW
             
             InitializeDatasFromCollection();
             InitializeGems();
+            SetAllGemsSpeeds(_gameManager.gemMoveSpeed);
             PlaceGemsOnBoard();
             TryGameOver();
-        }
-        public void OnUpdate()
-        {
-            SetAllGemsSpeeds(_gameManager.gemMoveSpeed);
         }
         public void OnDrawGizmos()
         {

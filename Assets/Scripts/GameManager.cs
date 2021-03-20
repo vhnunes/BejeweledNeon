@@ -80,13 +80,6 @@ public class GameManager : MonoBehaviour
         InitializeScoreManager();
         InitializeUIManager();
         InitializeGemControl();
-        
-        InvokeRepeating(nameof(InvokeUpdate), .1f, .1f);
-    }
-
-    private void InvokeUpdate()
-    {
-        _board.OnUpdate();
     }
 
     #endregion
