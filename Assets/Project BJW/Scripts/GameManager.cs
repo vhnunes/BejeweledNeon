@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviour
     #region Properties
 
     public Score score => _score;
+    public Board board => _board;
 
     #endregion
     

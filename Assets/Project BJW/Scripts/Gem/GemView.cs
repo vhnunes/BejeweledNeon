@@ -70,7 +70,7 @@ public class GemView : MonoBehaviour
     
     private void GoToSpawnPosition()
     {
-        this.transform.position = _gem.boardPosition + (Vector2.up * 10);
+        this.transform.position = new Vector3(_gem.boardPosition.x, _gameManager.board.collumSize + _gem.boardPosition.y);
     }
 
     private void InitializeParticle()
