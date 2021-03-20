@@ -2,6 +2,9 @@
 
 namespace BJW
 {
+    /// <summary>
+    /// Store information about a possible gem match.
+    /// </summary>
     public class GemMatch
     {
         #region Variables

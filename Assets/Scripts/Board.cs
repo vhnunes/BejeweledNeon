@@ -4,24 +4,26 @@ using UnityEngine;
 
 namespace BJW
 {
+    /// <summary>
+    /// The game board related behaviours and classes, like his gems, matchs ocurring and others.
+    /// </summary>
+    [System.Serializable]
     public class Board
     {
-        // TODO: IMPROVE GAME MANAGER REFERENCE TO CALL ROUTINES
-        
         #region Variables
 
-        private bool _canStartWitchMatches = false;
-        
         private BoardState _boardState = BoardState.Playing;
-        private int _rowSize, _collumSize;
+        
+        [SerializeField] private bool _canStartWitchMatches;
+        [SerializeField] private int _rowSize, _collumSize;
 
+        #region Gem Data
+
+        private GemCollectionData _gemCollection;
         private GemData[] _gemsDataAvaliable;
         private Gem[] _gemsInGame;
-        private List<GemMatch> _gemMatches = new List<GemMatch>();
-        
-        private float _gemMatchAnimTime = 0.5f;
-        private float _gemSwitchTime = 0.5f;
-        private float _boardAfterMatchDelay = 1f;
+
+        #endregion
 
         #region Properties
 
@@ -34,45 +36,52 @@ namespace BJW
 
         #region Components
 
-        private GameManager _gameManager = null;
+        private GameManager _gameManager;
 
         #endregion
-
-        #region Methods
         
-        // Constructor
-        public Board(int rowSize, int collumSize, GemData[] gemsDataToUseInGame, bool canStartWithMatches = false)
-        {
-            _canStartWitchMatches = canStartWithMatches;
-            
-            _rowSize = rowSize;
-            _collumSize = collumSize;
-
-            _gemsDataAvaliable = gemsDataToUseInGame;
-            _gemsInGame = new Gem[rowSize * collumSize];
-        }
-        public void ChangeBoardState(BoardState newState)
-        {
-            _boardState = newState;
-        }
+        #region MonoBehaviour Call
 
         public void OnStart()
         {
             _gameManager = GameManager.instance;
             _gameManager.OnGameRestart += () => ChangeBoardState(BoardState.Playing);
             _gameManager.OnGameRestart += ResetAllGems;
+            
+            InitializeDatasFromCollection();
             InitializeGems();
+            SetAllGemsSpeeds(_gameManager.gemMoveSpeed);
             PlaceGemsOnBoard();
             TryGameOver();
         }
-        
-        public void SetTimings(float matchAnimTime, float switchTime, float boardMatchDelay)
+        public void OnDrawGizmos()
         {
-            _gemMatchAnimTime = matchAnimTime;
-            _gemSwitchTime = switchTime;
-            _boardAfterMatchDelay = boardMatchDelay;
+            var sizeX = 1;
+            var sizeY = 1;
+            
+            var size = new Vector2(sizeX,sizeY);
+            
+            for (int i = 0; i < _rowSize; i++)
+            {
+                for (int j = 0; j < _collumSize; j++)
+                {
+                    var position = new Vector3(i*size.x, j*size.y, 0);
+                    
+                    Gizmos.DrawWireCube(position, size);
+                }
+            }
         }
 
+        #endregion
+
+        #region Methods
+
+        #region Board Control
+
+        public void ChangeBoardState(BoardState newState)
+        {
+            _boardState = newState;
+        }
         private bool TryGameOver()
         {
             var movementsLeft = PossibleMovementsToMakeMatch();
@@ -80,7 +89,7 @@ namespace BJW
             {
                 ChangeBoardState(BoardState.Waiting);
                 
-                GameManager.instance.GameOver();
+                _gameManager.GameOver();
                 
                 return true;
             }
@@ -88,7 +97,9 @@ namespace BJW
             
             return false;
         }
-        
+
+        #endregion
+
         #region Gems
         
         public void SwitchGems(Gem firstGem, Gem secondGem)
@@ -108,12 +119,10 @@ namespace BJW
 
             var isSwitchLegal = firstGemMatch.IsMatch() || secondGemMatch.IsMatch();
             
-            // TODO: Better way to use start coroutine without need for singleton? Can have a refence in this class...
-            GameManager.instance.StartCoroutine(isSwitchLegal
+            _gameManager.StartCoroutine(isSwitchLegal
                 ? OnLegalGemSwitchRoutine(firstGemMatch, secondGemMatch)
                 : OnIlegalSwitchRoutine(firstGem, secondGem));
         }
-
         public void SetAllGemsSpeeds(float speed)
         {
             foreach (var gem in gemsInGame)
@@ -134,9 +143,9 @@ namespace BJW
                 allGemsMatch.AddGem(gem);
             }
 
-            var mainRoutine = GameManager.instance.StartCoroutine(MatchGemRoutine(allGemsMatch));
+            var mainRoutine = _gameManager.StartCoroutine(MatchGemRoutine(allGemsMatch));
             yield return mainRoutine;
-            yield return new WaitForSeconds(_boardAfterMatchDelay);
+            yield return new WaitForSeconds(_gameManager.boardDelayAfterMatch);
             
             // Do all other matches that can have in board.
             var boardMatches = GetAllMatchsInBoard();
@@ -144,7 +153,7 @@ namespace BJW
             {
                 // Do first other match im board.
                 var firstOtherMatch = boardMatches[0];
-                var otherFirstRoutine =  GameManager.instance.StartCoroutine(MatchGemRoutine(firstOtherMatch));
+                var otherFirstRoutine =  _gameManager.StartCoroutine(MatchGemRoutine(firstOtherMatch));
                 
                 // Start all other matches at the same time if have.
                 if (boardMatches.Length > 1)
@@ -152,13 +161,13 @@ namespace BJW
                     for (int i = 1; i < boardMatches.Length; i++)
                     {
                         var match = boardMatches[i];
-                        GameManager.instance.StartCoroutine(MatchGemRoutine(match));
+                        _gameManager.StartCoroutine(MatchGemRoutine(match));
                     }
                 }
 
                 // Wait for any match to stop, (all matches have the same time)
                 yield return otherFirstRoutine;
-                yield return new WaitForSeconds(_boardAfterMatchDelay);
+                yield return new WaitForSeconds(_gameManager.boardDelayAfterMatch);
                 boardMatches = GetAllMatchsInBoard();
             }
             
@@ -168,7 +177,7 @@ namespace BJW
         }
         private IEnumerator OnIlegalSwitchRoutine(Gem firstGem, Gem secondGem)
         {
-            var halfSwitchTime = _gemSwitchTime * 0.5f;
+            var halfSwitchTime = _gameManager.gemSwitchTime * 0.5f;
             
             yield return new WaitForSeconds(halfSwitchTime);
             SwitchGems(firstGem, secondGem);
@@ -176,15 +185,26 @@ namespace BJW
             ChangeBoardState(BoardState.Playing);
         }
 
+        private void InitializeDatasFromCollection()
+        {
+            _gemCollection = _gameManager.gemeGemCollection;
+            
+            _gemsDataAvaliable = new GemData[_gemCollection.gemDatas.Length];
+            for (int i = 0; i < _gemsDataAvaliable.Length; i++)
+            {
+                _gemsDataAvaliable[i] = _gemCollection.gemDatas[i];
+            }
+        }
         private void InitializeGems()
         {
+            _gemsInGame = new Gem[_rowSize * _collumSize];
+            
             for (int i = 0; i < _gemsInGame.Length; i++)
             {
                 var sortGemData = GetRandomGemData();
                 _gemsInGame[i] = new Gem(sortGemData);
             }
         }
-
         private void ResetAllGems()
         {
             foreach (var gem in gemsInGame)
@@ -218,20 +238,17 @@ namespace BJW
                     gemIndex++;
                 }
             }
-
-            if (!_canStartWitchMatches)
+            
+            if (_canStartWitchMatches) return;
+            var matches = GetAllMatchsInBoard();
+            while (matches.Length > 0)
             {
-                var matches = GetAllMatchsInBoard();
-                while (matches.Length > 0)
-                {
-                    var firstGemOnMatch = matches[0].gems[0];
+                var firstGemOnMatch = matches[0].gems[0];
                 
-                    SetGemToAnother(firstGemOnMatch, true);
-                    matches = GetAllMatchsInBoard();
-                }
+                SetGemToAnotherRandom(firstGemOnMatch);
+                matches = GetAllMatchsInBoard();
             }
         }
-        
         private void FallAllGemsFromPosition(Vector2 boardPosition, int amount = 1)
         {
             // All gems from this position to up will fall
@@ -253,22 +270,6 @@ namespace BJW
                 gem.SetBoardPosition(gem.boardPosition + Vector2.down * amount);
             }
         }
-        
-        private void SetGemToAnother(Gem gem, GemData newGemData)
-        {
-            gem.TransformIntoNewGem(newGemData);
-        }
-        private void SetGemToAnother(Gem gem, bool randomNewData)
-        {
-            var sortGemData = GetRandomGemData();
-            gem.TransformIntoNewGem(sortGemData);
-        }
-
-        private GemData GetRandomGemData()
-        {
-            return _gemsDataAvaliable[Random.Range(0, _gemsDataAvaliable.Length)];
-        }
-        
         private void SendGemToTop(Gem gem)
         {
             // Send a gem to top of his collum while not replacing others.
@@ -282,6 +283,19 @@ namespace BJW
             }
             
             gem.SetBoardPosition(topPosition);
+        }
+        private void SetGemToAnother(Gem gem, GemData newGemData)
+        {
+            gem.TransformIntoNewGem(newGemData);
+        }
+        private void SetGemToAnotherRandom(Gem gem)
+        {
+            var sortGemData = GetRandomGemData();
+            gem.TransformIntoNewGem(sortGemData);
+        }
+        private GemData GetRandomGemData()
+        {
+            return _gemsDataAvaliable[Random.Range(0, _gemsDataAvaliable.Length)];
         }
         private Gem GetGemInPosition(Vector2 boardPosition)
         {
@@ -321,20 +335,17 @@ namespace BJW
             if (canMakeAtRight) return true;
 
             // Check Left
-            var canMakeAtLeft = MatchInGem(gem, gem.boardPosition - Vector2.right, false).IsMatch();;
+            var canMakeAtLeft = MatchInGem(gem, gem.boardPosition - Vector2.right, false).IsMatch();
             if (canMakeAtLeft) return true;
             
             // Check Up
-            var canMakeAtUp = MatchInGem(gem, gem.boardPosition + Vector2.up, false).IsMatch();;
+            var canMakeAtUp = MatchInGem(gem, gem.boardPosition + Vector2.up, false).IsMatch();
             if (canMakeAtUp) return true;
 
             // Check Down
-            var canMakeAtDown = MatchInGem(gem, gem.boardPosition - Vector2.up, false).IsMatch();;
-            if (canMakeAtDown) return true;
-
-            return false;
+            var canMakeAtDown = MatchInGem(gem, gem.boardPosition - Vector2.up, false).IsMatch();
+            return canMakeAtDown;
         }
-
         private void DoMatch(GemMatch match)
         {
             bool isMatchLegal = match.IsMatch();
@@ -348,6 +359,7 @@ namespace BJW
                 SendGemToTop(hGem);
             }
         }
+        
         private IEnumerator MatchGemRoutine(GemMatch match)
         {
             // Pre Match
@@ -355,11 +367,12 @@ namespace BJW
             {
                 gem.OnMatchStart();
             }
-            yield return new WaitForSeconds(_gemMatchAnimTime);
+            yield return new WaitForSeconds(_gameManager.gemMatchAnimTime);
             
             // On Match
             DoMatch(match);
         }
+        
         private GemMatch[] GetAllMatchsInBoard()
         {
             // The ideia is to star checkin in first position of board, after
@@ -369,7 +382,7 @@ namespace BJW
 
             List<GemMatch> boardMatchs = new List<GemMatch>();
 
-            // TODO: Isolate that on board initialization
+            // Get Positions in board
             Vector2[] positionsInBoard = new Vector2[_rowSize * _collumSize];
             int positionIndex = 0;
             for (int row = 0; row < _rowSize; row++)
@@ -486,12 +499,11 @@ namespace BJW
         private GemMatch HorizontalMatchOfGem(Gem gem, Vector2 gemPosition, bool canCheckSelf = true)
         {
             GemMatch match = new GemMatch();
-            
-            Vector2 nextGemPosition;
+
             Gem nextGem = null;
 
             // Right
-            nextGemPosition = gemPosition + Vector2.right;
+            var nextGemPosition = gemPosition + Vector2.right;
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
@@ -534,11 +546,10 @@ namespace BJW
         {
             GemMatch match = new GemMatch();
 
-            Vector2 nextGemPosition;
-            Gem nextGem = null;
+            Gem nextGem;
 
             // Up
-            nextGemPosition = gemPosition + Vector2.up;
+            var nextGemPosition = gemPosition + Vector2.up;
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
@@ -581,22 +592,24 @@ namespace BJW
         {
             if (boardPosition.x >= _rowSize)
                 return false;
-            
-            else if (boardPosition.x < 0)
+
+            if (boardPosition.x < 0)
                 return false;
-            
-            else if (boardPosition.y < 0)
+
+            if (boardPosition.y < 0)
                 return false;
-            
-            else if (boardPosition.y >= _collumSize)
-                return false;
-                
-            return true;
+
+            return !(boardPosition.y >= _collumSize);
         }
 
         #endregion
 
         #endregion
         
+    }
+    
+    public enum BoardState
+    {
+        Waiting, Playing, GemSelected
     }
 }

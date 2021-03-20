@@ -3,8 +3,11 @@ using UnityEngine;
 
 namespace BJW
 {
+    /// <summary>
+    /// Controls the score information and behaviour of the game, like adding score, saving and high score.
+    /// </summary>
     [Serializable]
-    public class ScoreManager
+    public class Score
     {
         #region Variables
 

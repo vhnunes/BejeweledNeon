@@ -1,15 +1,16 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace BJW
 {
+    /// <summary>
+    /// Responsible to show an score related information to the player in game.
+    /// </summary>
     [RequireComponent(typeof(Text))]
     public class ScoreView : MonoBehaviour
     {
         #region Variables
-
-        private const string _textFormat = "0";
+        
         private enum ViewType
         {
             Score, HighScore
@@ -24,7 +25,7 @@ namespace BJW
         private Text _myText => this.gameObject.GetComponent<Text>();
         
         private GameManager _gm;
-        private ScoreManager _scoreManager;
+        private Score _score;
 
         #endregion
         
@@ -47,7 +48,7 @@ namespace BJW
                 Debug.LogError($"Cannot made score view of {this.gameObject.name} work because there is no game manager.");
                 return;
             }
-            _scoreManager = _gm.scoreManager;
+            _score = _gm.score;
             
             SetOnScoreManager();
         }
@@ -55,26 +56,18 @@ namespace BJW
         {
             if (_viewType == ViewType.Score)
             {
-                _scoreManager.ReceiveScoreView(this);
+                _score.ReceiveScoreView(this);
             }
             
             else
             {
-                _scoreManager.ReceiveHighScoreView(this);
+                _score.ReceiveHighScoreView(this);
             }
         }
 
         public void UpdateView()
         {
-            if (_viewType == ViewType.Score)
-            {
-                _myText.text = _scoreManager.currentScore.ToString();
-            }
-
-            else
-            {
-                _myText.text = _scoreManager.highScore.ToString();
-            }
+            _myText.text = _viewType == ViewType.Score ? _score.currentScore.ToString() : _score.highScore.ToString();
         }
 
         #endregion

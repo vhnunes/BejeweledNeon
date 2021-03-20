@@ -3,19 +3,20 @@ using UnityEngine;
 
 namespace BJW
 {
+    /// <summary>
+    /// The base gem class, contains his loaded data and related behaviours.
+    /// </summary>
     public class Gem
     {
         #region Variables
         
         private GemType _gemType;
-        private GemState _gemState;
         private Color _gemColor;
         private Vector2 _boardPosition = new Vector2();
 
         #region Properties
 
         public GemType gemType => _gemType;
-        public GemState gemState => _gemState;
         public Color gemColor => _gemColor;
         public Vector2 boardPosition => _boardPosition;
 
@@ -46,7 +47,7 @@ namespace BJW
             _gemType = gemData.gemType;
             _gemColor = gemData.gemColor;
             
-            CreateView();
+            InstanceView();
         }
 
         public void TransformIntoNewGem(GemData newGemData)
@@ -67,8 +68,25 @@ namespace BJW
         {
             _gemView.SetMoveSpeed(speed);
         }
-
-
+        public bool IsCompatibleWith(Gem other)
+        {
+            if (other.gemColor == _gemColor)
+            {
+                return true;
+            }
+            
+            return false;
+        }
+        
+        private void InstanceView()
+        {
+            var gemViewObjInstance =  MonoBehaviour.Instantiate(_gemData.gemPrefab);
+            
+            _gemView = gemViewObjInstance.AddComponent<GemView>();
+            _gemView.SetGem(this);
+            _gemView.SetGemData(_gemData);
+        }
+        
         #region On States
 
         public void OnMatchStart()
@@ -78,7 +96,7 @@ namespace BJW
         public void OnMatchEnd()
         { 
             _gemView.SetMatchAnimation(false);
-            GameManager.instance.scoreManager.AddGemScore(this);
+            GameManager.instance.score.AddGemScore(this);
         }
         public void OnSelected()
         {
@@ -91,29 +109,11 @@ namespace BJW
 
         #endregion
 
-        public bool IsCompatibleWith(Gem other)
-        {
-            if (_gemState != GemState.Idle)
-                return false;
-            
-            if (other.gemColor == _gemColor)
-            {
-                if (other.gemState == GemState.Idle)
-                    return true;
-            }
-            
-            return false;
-        }
-        
-        private void CreateView()
-        {
-            var gemViewObjInstance =  MonoBehaviour.Instantiate(_gemData.gemPrefab);
-            
-            _gemView = gemViewObjInstance.AddComponent<GemView>();
-            _gemView.SetGem(this);
-            _gemView.SetGemData(_gemData);
-        }
-
         #endregion
+    }
+    
+    public enum GemType
+    {
+        Normal, Rare, SuperRare
     }
 }

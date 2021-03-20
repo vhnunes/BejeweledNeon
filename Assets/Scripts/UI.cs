@@ -3,8 +3,11 @@ using UnityEngine;
 
 namespace BJW
 {
+    /// <summary>
+    /// All UI behaviours of the game with his related views.
+    /// </summary>
     [Serializable]
-    public class UIManager
+    public class UI
     {
         
         #region Components

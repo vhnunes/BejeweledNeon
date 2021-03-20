@@ -2,6 +2,9 @@
 
 namespace BJW
 {
+    /// <summary>
+    /// Contrains all the data information about a gem, like his visuals, color and type.
+    /// </summary>
     [CreateAssetMenu(fileName = "Gem Data", menuName = "BJW/Gem Data", order = 0)]
     public class GemData : ScriptableObject
     {

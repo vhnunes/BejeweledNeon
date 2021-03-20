@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace BJW
 {
+    /// <summary>
+    /// Player input interaction with gems in game.
+    /// </summary>
     public class GemControl
     {
         #region Components

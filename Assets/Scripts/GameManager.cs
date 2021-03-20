@@ -2,6 +2,10 @@
 using BJW;
 using UnityEngine;
 
+/// <summary>
+/// The Game Manager is a singleton used to control all the flow over the game, here all game required information
+/// and calsses will be found, have his initialization and monobehaviour calls.
+/// </summary>
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
@@ -15,17 +19,48 @@ public class GameManager : MonoBehaviour
     public OnGameOverEvents OnGameRestart;
 
     #endregion
-    
-    #region Components
 
-    [SerializeField] private BoardManager _boardManager = new BoardManager();
-    [SerializeField] private ScoreManager _scoreManager = new ScoreManager();
-    [SerializeField] private UIManager _uiManager = new UIManager();
+    #region Game Variables / Data
+    
+    [Header("Game Datas")]
+    [SerializeField] private GemCollectionData _gameGemCollection = null;
+    
+    [Header("Gem")]
+    [SerializeField] private float _gemMoveSpeed = 10f;
+    [SerializeField] private float _gemMatchAnimTime = 0.5f;
+    [SerializeField] private float _gemSwitchTime = 0.5f;
+    
+    [Header("Board")]
+    [SerializeField] private float _boardDelayAfterMatch = 1f;
+    
+    #region Properties
+
+    // Game Data
+    public GemCollectionData gemeGemCollection => _gameGemCollection;
+    
+    // Gem Variables
+    public float gemMoveSpeed => _gemMoveSpeed;
+    public float gemMatchAnimTime => _gemMatchAnimTime;
+    public float gemSwitchTime => _gemSwitchTime;
+    
+    // Board Variables
+    public float boardDelayAfterMatch => _boardDelayAfterMatch;
+
+    #endregion
+    
+    #endregion
+    
+    #region Game Classes
+
+    [Header("Game Classes")]
+    [SerializeField] private Board _board = new Board();
+    [SerializeField] private Score _score = new Score();
+    [SerializeField] private UI _ui = new UI();
     private GemControl _gemControl = null;
 
     #region Properties
 
-    public ScoreManager scoreManager => _scoreManager;
+    public Score score => _score;
 
     #endregion
     
@@ -35,7 +70,7 @@ public class GameManager : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        _boardManager.OnGizmos();
+        _board.OnDrawGizmos();
     }
 
     private void Awake()
@@ -45,17 +80,10 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        InitializeBoardManager();
+        InitializeBoard();
         InitializeScoreManager();
         InitializeUIManager();
         InitializeGemControl();
-        
-        InvokeRepeating(nameof(InvokeUpdate), .1f, .1f);
-    }
-
-    private void InvokeUpdate()
-    {
-        _boardManager.OnUpdate();
     }
 
     #endregion
@@ -81,21 +109,21 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
     }
-    private void InitializeBoardManager()
+    private void InitializeBoard()
     {
-        _boardManager.OnStart();
+        _board.OnStart();
     }
     private void InitializeScoreManager()
     {
-        scoreManager.OnStart();
+        score.OnStart();
     }
     private void InitializeUIManager()
     {
-        _uiManager.OnStart();
+        _ui.OnStart();
     }
     private void InitializeGemControl()
     {
-        _gemControl = new GemControl(_boardManager.board);
+        _gemControl = new GemControl(_board);
     }
 
     #endregion
