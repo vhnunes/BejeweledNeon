@@ -6,7 +6,7 @@
 #
 
 This project is a 7 day challenge to make a bejeweled clone. 
-Currently iam at the day 5 and with the first MVP released, [check out here](https://github.com/vhng/BejeweledNeon/releases).
+Currently iam at the day last day and with the second MVP released, [check out here](https://github.com/vhng/BejeweledNeon/releases).
 
 ![](https://i.imgur.com/0EvMMzV.gif)
 
@@ -19,9 +19,8 @@ Currently iam at the day 5 and with the first MVP released, [check out here](htt
 - Simple UI w/ animated title.
 
 ### To do
-- Clean the code and refac.
-- Doc.
+- ~~Doc.~~
 - Improve animations.
 - Better game loop (timer attack).
 - Sounds
-- Special gems.
+- ~~Special gems~~.
