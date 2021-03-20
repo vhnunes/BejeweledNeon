@@ -21,6 +21,7 @@ namespace BJW
         private Gem[] _gemsInGame;
 
         #endregion
+        
         private List<GemMatch> _gemMatches = new List<GemMatch>();
 
         #region Properties
@@ -37,13 +38,8 @@ namespace BJW
         private GameManager _gameManager = null;
 
         #endregion
-
-        #region Methods
         
-        public void ChangeBoardState(BoardState newState)
-        {
-            _boardState = newState;
-        }
+        #region MonoBehaviour Call
 
         public void OnStart()
         {
@@ -56,12 +52,10 @@ namespace BJW
             PlaceGemsOnBoard();
             TryGameOver();
         }
-
         public void OnUpdate()
         {
             SetAllGemsSpeeds(_gameManager.gemMoveSpeed);
         }
-
         public void OnDrawGizmos()
         {
             var sizeX = 1;
@@ -80,6 +74,16 @@ namespace BJW
             }
         }
 
+        #endregion
+
+        #region Methods
+
+        #region Board Control
+
+        public void ChangeBoardState(BoardState newState)
+        {
+            _boardState = newState;
+        }
         private bool TryGameOver()
         {
             var movementsLeft = PossibleMovementsToMakeMatch();
@@ -95,7 +99,9 @@ namespace BJW
             
             return false;
         }
-        
+
+        #endregion
+
         #region Gems
         
         public void SwitchGems(Gem firstGem, Gem secondGem)
@@ -120,7 +126,6 @@ namespace BJW
                 ? OnLegalGemSwitchRoutine(firstGemMatch, secondGemMatch)
                 : OnIlegalSwitchRoutine(firstGem, secondGem));
         }
-
         public void SetAllGemsSpeeds(float speed)
         {
             foreach (var gem in gemsInGame)
@@ -249,7 +254,6 @@ namespace BJW
                 }
             }
         }
-        
         private void FallAllGemsFromPosition(Vector2 boardPosition, int amount = 1)
         {
             // All gems from this position to up will fall
@@ -271,22 +275,6 @@ namespace BJW
                 gem.SetBoardPosition(gem.boardPosition + Vector2.down * amount);
             }
         }
-        
-        private void SetGemToAnother(Gem gem, GemData newGemData)
-        {
-            gem.TransformIntoNewGem(newGemData);
-        }
-        private void SetGemToAnother(Gem gem, bool randomNewData)
-        {
-            var sortGemData = GetRandomGemData();
-            gem.TransformIntoNewGem(sortGemData);
-        }
-
-        private GemData GetRandomGemData()
-        {
-            return _gemsDataAvaliable[Random.Range(0, _gemsDataAvaliable.Length)];
-        }
-        
         private void SendGemToTop(Gem gem)
         {
             // Send a gem to top of his collum while not replacing others.
@@ -300,6 +288,19 @@ namespace BJW
             }
             
             gem.SetBoardPosition(topPosition);
+        }
+        private void SetGemToAnother(Gem gem, GemData newGemData)
+        {
+            gem.TransformIntoNewGem(newGemData);
+        }
+        private void SetGemToAnother(Gem gem, bool randomNewData)
+        {
+            var sortGemData = GetRandomGemData();
+            gem.TransformIntoNewGem(sortGemData);
+        }
+        private GemData GetRandomGemData()
+        {
+            return _gemsDataAvaliable[Random.Range(0, _gemsDataAvaliable.Length)];
         }
         private Gem GetGemInPosition(Vector2 boardPosition)
         {
