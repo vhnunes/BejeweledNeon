@@ -46,6 +46,7 @@ public class GemView : MonoBehaviour
     {
         InitializeCollider();
         InitializeParticle();
+        this.transform.parent = _gameManager.gemRoot;
         
         _gameManager.OnGameOver += () => SetMatchAnimation(true);
         _gameManager.OnGameRestart += () => SetMatchAnimation(false);

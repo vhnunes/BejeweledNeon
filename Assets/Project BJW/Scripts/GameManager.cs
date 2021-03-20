@@ -26,8 +26,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float _gameTime = 60f;
     private float _startGameTime = 60f;
     [SerializeField] private GemCollectionData _gameGemCollection = null;
-    
-    [Header("Gem")]
+
+    [Header("Gem")] 
+    [SerializeField] private Transform _gemsRoot;
     [SerializeField] private float _gemMoveSpeed = 10f;
     [SerializeField] private float _gemMatchAnimTime = 0.5f;
     [SerializeField] private float _gemSwitchTime = 0.5f;
@@ -42,6 +43,7 @@ public class GameManager : MonoBehaviour
     public GemCollectionData gemeGemCollection => _gameGemCollection;
     
     // Gem Variables
+    public Transform gemRoot => _gemsRoot;
     public float gemMoveSpeed => _gemMoveSpeed;
     public float gemMatchAnimTime => _gemMatchAnimTime;
     public float gemSwitchTime => _gemSwitchTime;
