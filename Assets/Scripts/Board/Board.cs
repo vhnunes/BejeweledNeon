@@ -11,7 +11,7 @@ namespace BJW
 
         private BoardState _boardState = BoardState.Playing;
         
-        [SerializeField] private bool _canStartWitchMatches = false;
+        [SerializeField] private bool _canStartWitchMatches;
         [SerializeField] private int _rowSize, _collumSize;
 
         #region Gem Data
@@ -21,8 +21,6 @@ namespace BJW
         private Gem[] _gemsInGame;
 
         #endregion
-        
-        private List<GemMatch> _gemMatches = new List<GemMatch>();
 
         #region Properties
 
@@ -35,7 +33,7 @@ namespace BJW
 
         #region Components
 
-        private GameManager _gameManager = null;
+        private GameManager _gameManager;
 
         #endregion
         
@@ -118,7 +116,6 @@ namespace BJW
 
             var isSwitchLegal = firstGemMatch.IsMatch() || secondGemMatch.IsMatch();
             
-            // TODO: Better way to use start coroutine without need for singleton? Can have a refence in this class...
             _gameManager.StartCoroutine(isSwitchLegal
                 ? OnLegalGemSwitchRoutine(firstGemMatch, secondGemMatch)
                 : OnIlegalSwitchRoutine(firstGem, secondGem));
@@ -238,17 +235,15 @@ namespace BJW
                     gemIndex++;
                 }
             }
-
-            if (!_canStartWitchMatches)
+            
+            if (_canStartWitchMatches) return;
+            var matches = GetAllMatchsInBoard();
+            while (matches.Length > 0)
             {
-                var matches = GetAllMatchsInBoard();
-                while (matches.Length > 0)
-                {
-                    var firstGemOnMatch = matches[0].gems[0];
+                var firstGemOnMatch = matches[0].gems[0];
                 
-                    SetGemToAnother(firstGemOnMatch, true);
-                    matches = GetAllMatchsInBoard();
-                }
+                SetGemToAnotherRandom(firstGemOnMatch);
+                matches = GetAllMatchsInBoard();
             }
         }
         private void FallAllGemsFromPosition(Vector2 boardPosition, int amount = 1)
@@ -290,7 +285,7 @@ namespace BJW
         {
             gem.TransformIntoNewGem(newGemData);
         }
-        private void SetGemToAnother(Gem gem, bool randomNewData)
+        private void SetGemToAnotherRandom(Gem gem)
         {
             var sortGemData = GetRandomGemData();
             gem.TransformIntoNewGem(sortGemData);
@@ -337,20 +332,17 @@ namespace BJW
             if (canMakeAtRight) return true;
 
             // Check Left
-            var canMakeAtLeft = MatchInGem(gem, gem.boardPosition - Vector2.right, false).IsMatch();;
+            var canMakeAtLeft = MatchInGem(gem, gem.boardPosition - Vector2.right, false).IsMatch();
             if (canMakeAtLeft) return true;
             
             // Check Up
-            var canMakeAtUp = MatchInGem(gem, gem.boardPosition + Vector2.up, false).IsMatch();;
+            var canMakeAtUp = MatchInGem(gem, gem.boardPosition + Vector2.up, false).IsMatch();
             if (canMakeAtUp) return true;
 
             // Check Down
-            var canMakeAtDown = MatchInGem(gem, gem.boardPosition - Vector2.up, false).IsMatch();;
-            if (canMakeAtDown) return true;
-
-            return false;
+            var canMakeAtDown = MatchInGem(gem, gem.boardPosition - Vector2.up, false).IsMatch();
+            return canMakeAtDown;
         }
-
         private void DoMatch(GemMatch match)
         {
             bool isMatchLegal = match.IsMatch();
@@ -364,6 +356,7 @@ namespace BJW
                 SendGemToTop(hGem);
             }
         }
+        
         private IEnumerator MatchGemRoutine(GemMatch match)
         {
             // Pre Match
@@ -376,6 +369,7 @@ namespace BJW
             // On Match
             DoMatch(match);
         }
+        
         private GemMatch[] GetAllMatchsInBoard()
         {
             // The ideia is to star checkin in first position of board, after
@@ -385,7 +379,7 @@ namespace BJW
 
             List<GemMatch> boardMatchs = new List<GemMatch>();
 
-            // TODO: Isolate that on board initialization
+            // Get Positions in board
             Vector2[] positionsInBoard = new Vector2[_rowSize * _collumSize];
             int positionIndex = 0;
             for (int row = 0; row < _rowSize; row++)
@@ -502,12 +496,11 @@ namespace BJW
         private GemMatch HorizontalMatchOfGem(Gem gem, Vector2 gemPosition, bool canCheckSelf = true)
         {
             GemMatch match = new GemMatch();
-            
-            Vector2 nextGemPosition;
+
             Gem nextGem = null;
 
             // Right
-            nextGemPosition = gemPosition + Vector2.right;
+            var nextGemPosition = gemPosition + Vector2.right;
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
@@ -550,11 +543,10 @@ namespace BJW
         {
             GemMatch match = new GemMatch();
 
-            Vector2 nextGemPosition;
-            Gem nextGem = null;
+            Gem nextGem;
 
             // Up
-            nextGemPosition = gemPosition + Vector2.up;
+            var nextGemPosition = gemPosition + Vector2.up;
             while (CanCheckPosition(nextGemPosition))
             {
                 nextGem = GetGemInPosition(nextGemPosition);
@@ -597,17 +589,14 @@ namespace BJW
         {
             if (boardPosition.x >= _rowSize)
                 return false;
-            
-            else if (boardPosition.x < 0)
+
+            if (boardPosition.x < 0)
                 return false;
-            
-            else if (boardPosition.y < 0)
+
+            if (boardPosition.y < 0)
                 return false;
-            
-            else if (boardPosition.y >= _collumSize)
-                return false;
-                
-            return true;
+
+            return !(boardPosition.y >= _collumSize);
         }
 
         #endregion
