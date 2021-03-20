@@ -7,6 +7,7 @@
 
 This project is a 7 day challenge to make a bejeweled clone. 
 Currently is done with the v1 release, [check out here](https://github.com/vhng/BejeweledNeon/releases).
+[Check the guide too](https://github.com/vhng/BejeweledNeon/blob/main/guide.md).
 
 ![](https://i.imgur.com/TbaHLUz.gif)
 
