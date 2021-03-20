@@ -21,8 +21,10 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Game Variables / Data
-    
-    [Header("Game Datas")]
+
+    [Header("Game")] 
+    [SerializeField] private float _gameTime = 60f;
+    private float _startGameTime = 60f;
     [SerializeField] private GemCollectionData _gameGemCollection = null;
     
     [Header("Gem")]
@@ -35,7 +37,8 @@ public class GameManager : MonoBehaviour
     
     #region Properties
 
-    // Game Data
+    // Game
+    public float gameTime => _gameTime;
     public GemCollectionData gemeGemCollection => _gameGemCollection;
     
     // Gem Variables
@@ -80,6 +83,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        _startGameTime = gameTime;
+        
+        InvokeRepeating(nameof(CalculateGameTime), 1f ,1f);
         InitializeBoard();
         InitializeScoreManager();
         InitializeUIManager();
@@ -128,6 +134,26 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+    #region Methods
+
+    private void CalculateGameTime()
+    {
+        if (_gameTime <= 0) return;
+        
+        if (gameTime - 1 <= 0)
+        {
+            _gameTime = 0;
+            GameOver(); 
+            _board.ChangeBoardState(BoardState.Waiting);
+            return;
+        }
+            
+        _gameTime--;
+
+    }
+
+    #endregion
+
     #region CallBacks
     
     // TODO: Centralize callbacks here?
@@ -135,12 +161,14 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         OnGameOver?.Invoke();
+        StopAllCoroutines();
         Invoke(nameof(RestartGame), 5f);
     }
     
     private void RestartGame()
     {
         OnGameRestart?.Invoke();
+        _gameTime = 60f;
     }
 
     #endregion
