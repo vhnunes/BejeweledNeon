@@ -4,7 +4,7 @@ using UnityEngine;
 namespace BJW
 {
     [Serializable]
-    public class ScoreManager
+    public class Score
     {
         #region Variables
 

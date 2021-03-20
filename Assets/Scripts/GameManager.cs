@@ -50,13 +50,13 @@ public class GameManager : MonoBehaviour
 
     [Header("Game Classes")]
     [SerializeField] private Board _board = new Board();
-    [SerializeField] private ScoreManager _scoreManager = new ScoreManager();
+    [SerializeField] private Score _score = new Score();
     [SerializeField] private UIManager _uiManager = new UIManager();
     private GemControl _gemControl = null;
 
     #region Properties
 
-    public ScoreManager scoreManager => _scoreManager;
+    public Score score => _score;
 
     #endregion
     
@@ -111,7 +111,7 @@ public class GameManager : MonoBehaviour
     }
     private void InitializeScoreManager()
     {
-        scoreManager.OnStart();
+        score.OnStart();
     }
     private void InitializeUIManager()
     {

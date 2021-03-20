@@ -93,7 +93,7 @@ namespace BJW
         public void OnMatchEnd()
         { 
             _gemView.SetMatchAnimation(false);
-            GameManager.instance.scoreManager.AddGemScore(this);
+            GameManager.instance.score.AddGemScore(this);
         }
         public void OnSelected()
         {

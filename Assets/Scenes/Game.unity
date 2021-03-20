@@ -235,11 +235,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gameGemCollection: {fileID: 11400000, guid: 38a18889b1e32ba42aab8c3ecf4edcbd, type: 2}
   _gemMoveSpeed: 10
+  _gemMatchAnimTime: 0.5
+  _gemSwitchTime: 0.5
+  _boardDelayAfterMatch: 1
   _board:
     _canStartWitchMatches: 0
     _rowSize: 8
     _collumSize: 8
-  _scoreManager:
+  _score:
     _currentScore: 0
     _normalGemReward: 100
     _rareGemReward: 250
