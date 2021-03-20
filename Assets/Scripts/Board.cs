@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace BJW
 {
+    /// <summary>
+    /// The game board related behaviours and classes, like his gems, matchs ocurring and others.
+    /// </summary>
     [System.Serializable]
     public class Board
     {

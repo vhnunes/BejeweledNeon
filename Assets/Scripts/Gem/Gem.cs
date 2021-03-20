@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace BJW
 {
+    /// <summary>
+    /// The base gem class, contains his loaded data and related behaviours.
+    /// </summary>
     public class Gem
     {
         #region Variables

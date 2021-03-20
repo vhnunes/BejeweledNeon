@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace BJW
 {
+    /// <summary>
+    /// All UI behaviours of the game with his related views.
+    /// </summary>
     [Serializable]
     public class UI
     {

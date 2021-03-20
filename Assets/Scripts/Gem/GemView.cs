@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using BJW;
 using UnityEngine;
 
+/// <summary>
+/// Responsible to visual show all informations from a desired gem. Like his sprite, animations, movement, and so on.
+/// </summary>
 public class GemView : MonoBehaviour
 {
     #region Variables

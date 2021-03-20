@@ -2,6 +2,10 @@
 using BJW;
 using UnityEngine;
 
+/// <summary>
+/// The Game Manager is a singleton used to control all the flow over the game, here all game required information
+/// and calsses will be found, have his initialization and monobehaviour calls.
+/// </summary>
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;

@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace BJW
 {
+    /// <summary>
+    /// Responsible to show an score related information to the player in game.
+    /// </summary>
     [RequireComponent(typeof(Text))]
     public class ScoreView : MonoBehaviour
     {
