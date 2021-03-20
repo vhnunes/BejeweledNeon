@@ -169,7 +169,7 @@ public class GameManager : MonoBehaviour
     private void RestartGame()
     {
         OnGameRestart?.Invoke();
-        _gameTime = 60f;
+        _gameTime = _startGameTime;
     }
 
     #endregion
