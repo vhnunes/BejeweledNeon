@@ -4,7 +4,7 @@ using UnityEngine;
 namespace BJW
 {
     [Serializable]
-    public class UIManager
+    public class UI
     {
         
         #region Components
