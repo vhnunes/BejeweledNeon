@@ -27,6 +27,7 @@ namespace BJW
 
         #region Properties
 
+        public float rowSize => _rowSize;
         public float collumSize => _collumSize;
         
         public BoardState boardState => _boardState;

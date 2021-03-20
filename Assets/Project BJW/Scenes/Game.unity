@@ -626,8 +626,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 563363157}
+  - component: {fileID: 563363158}
   m_Layer: 0
-  m_Name: Board
+  m_Name: Board View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -649,6 +650,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &563363158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563363156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 462bbb30f4d1c134bae2358c671bcb53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gm: {fileID: 93120213}
+  _tileRenderer: {fileID: 1306750481}
+  _bgRenderer: {fileID: 1203542026}
 --- !u!1 &722325583
 GameObject:
   m_ObjectHideFlags: 0
@@ -1153,7 +1169,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 1
-  m_Size: {x: 8.569856, y: 8.569856}
+  m_Size: {x: 8.5, y: 8.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1167,7 +1183,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1203542025}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.5, y: 3.49, z: 0}
+  m_LocalPosition: {x: -0.75, y: -0.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0}
   m_Children: []
   m_Father: {fileID: 563363157}
