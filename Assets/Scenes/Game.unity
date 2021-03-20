@@ -233,16 +233,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49795a8dd8c54805a30d43bddcd406bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _boardManager:
-    canStartWitchMatches: 0
-    _boardRowSize: 8
-    _boardCollumSize: 8
-    _gemMoveSpeed: 10
-    _gemMatchAnimTime: 0.8
-    _gemSwitchTime: 0.5
-    _boardAfterMatchDelay: 1
-    _gemCollectionToUse: {fileID: 11400000, guid: 38a18889b1e32ba42aab8c3ecf4edcbd,
-      type: 2}
+  _gameGemCollection: {fileID: 11400000, guid: 38a18889b1e32ba42aab8c3ecf4edcbd, type: 2}
+  _gemMoveSpeed: 10
+  _board:
+    _canStartWitchMatches: 0
+    _rowSize: 8
+    _collumSize: 8
   _scoreManager:
     _currentScore: 0
     _normalGemReward: 100

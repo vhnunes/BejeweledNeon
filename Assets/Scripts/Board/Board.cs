@@ -4,17 +4,19 @@ using UnityEngine;
 
 namespace BJW
 {
+    [System.Serializable]
     public class Board
     {
         // TODO: IMPROVE GAME MANAGER REFERENCE TO CALL ROUTINES
         
         #region Variables
 
-        private bool _canStartWitchMatches = false;
+        [SerializeField] private bool _canStartWitchMatches = false;
         
         private BoardState _boardState = BoardState.Playing;
-        private int _rowSize, _collumSize;
-
+        [SerializeField] private int _rowSize, _collumSize;
+        
+        private GemCollectionData _gemCollection;
         private GemData[] _gemsDataAvaliable;
         private Gem[] _gemsInGame;
         private List<GemMatch> _gemMatches = new List<GemMatch>();
@@ -40,17 +42,6 @@ namespace BJW
 
         #region Methods
         
-        // Constructor
-        public Board(int rowSize, int collumSize, GemData[] gemsDataToUseInGame, bool canStartWithMatches = false)
-        {
-            _canStartWitchMatches = canStartWithMatches;
-            
-            _rowSize = rowSize;
-            _collumSize = collumSize;
-
-            _gemsDataAvaliable = gemsDataToUseInGame;
-            _gemsInGame = new Gem[rowSize * collumSize];
-        }
         public void ChangeBoardState(BoardState newState)
         {
             _boardState = newState;
@@ -61,16 +52,34 @@ namespace BJW
             _gameManager = GameManager.instance;
             _gameManager.OnGameRestart += () => ChangeBoardState(BoardState.Playing);
             _gameManager.OnGameRestart += ResetAllGems;
+            
+            InitializeDatasFromCollection();
             InitializeGems();
             PlaceGemsOnBoard();
             TryGameOver();
         }
-        
-        public void SetTimings(float matchAnimTime, float switchTime, float boardMatchDelay)
+
+        public void OnUpdate()
         {
-            _gemMatchAnimTime = matchAnimTime;
-            _gemSwitchTime = switchTime;
-            _boardAfterMatchDelay = boardMatchDelay;
+            SetAllGemsSpeeds(_gameManager.gemMoveSpeed);
+        }
+
+        public void OnDrawGizmos()
+        {
+            var sizeX = 1;
+            var sizeY = 1;
+            
+            var size = new Vector2(sizeX,sizeY);
+            
+            for (int i = 0; i < _rowSize; i++)
+            {
+                for (int j = 0; j < _collumSize; j++)
+                {
+                    var position = new Vector3(i*size.x, j*size.y, 0);
+                    
+                    Gizmos.DrawWireCube(position, size);
+                }
+            }
         }
 
         private bool TryGameOver()
@@ -176,15 +185,26 @@ namespace BJW
             ChangeBoardState(BoardState.Playing);
         }
 
+        private void InitializeDatasFromCollection()
+        {
+            _gemCollection = _gameManager.gemeGemCollection;
+            
+            _gemsDataAvaliable = new GemData[_gemCollection.gemDatas.Length];
+            for (int i = 0; i < _gemsDataAvaliable.Length; i++)
+            {
+                _gemsDataAvaliable[i] = _gemCollection.gemDatas[i];
+            }
+        }
         private void InitializeGems()
         {
+            _gemsInGame = new Gem[_rowSize * _collumSize];
+            
             for (int i = 0; i < _gemsInGame.Length; i++)
             {
                 var sortGemData = GetRandomGemData();
                 _gemsInGame[i] = new Gem(sortGemData);
             }
         }
-
         private void ResetAllGems()
         {
             foreach (var gem in gemsInGame)

@@ -15,10 +15,29 @@ public class GameManager : MonoBehaviour
     public OnGameOverEvents OnGameRestart;
 
     #endregion
-    
-    #region Components
 
-    [SerializeField] private BoardManager _boardManager = new BoardManager();
+    #region Game Variables / Data
+    
+    [Header("Game Datas")]
+    [SerializeField] private GemCollectionData _gameGemCollection = null;
+
+    [Header("Game Variables")] 
+    [SerializeField] private float _gemMoveSpeed = 10f;
+    
+    #region Properties
+
+    public GemCollectionData gemeGemCollection => _gameGemCollection;
+    
+    public float gemMoveSpeed => _gemMoveSpeed;
+
+    #endregion
+    
+    #endregion
+    
+    #region Game Classes
+
+    [Header("Game Classes")]
+    [SerializeField] private Board _board = new Board();
     [SerializeField] private ScoreManager _scoreManager = new ScoreManager();
     [SerializeField] private UIManager _uiManager = new UIManager();
     private GemControl _gemControl = null;
@@ -35,7 +54,7 @@ public class GameManager : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        _boardManager.OnGizmos();
+        _board.OnDrawGizmos();
     }
 
     private void Awake()
@@ -45,7 +64,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        InitializeBoardManager();
+        InitializeBoard();
         InitializeScoreManager();
         InitializeUIManager();
         InitializeGemControl();
@@ -55,7 +74,7 @@ public class GameManager : MonoBehaviour
 
     private void InvokeUpdate()
     {
-        _boardManager.OnUpdate();
+        _board.OnUpdate();
     }
 
     #endregion
@@ -81,9 +100,9 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
     }
-    private void InitializeBoardManager()
+    private void InitializeBoard()
     {
-        _boardManager.OnStart();
+        _board.OnStart();
     }
     private void InitializeScoreManager()
     {
@@ -95,7 +114,7 @@ public class GameManager : MonoBehaviour
     }
     private void InitializeGemControl()
     {
-        _gemControl = new GemControl(_boardManager.board);
+        _gemControl = new GemControl(_board);
     }
 
     #endregion
