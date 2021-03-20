@@ -20,15 +20,27 @@ public class GameManager : MonoBehaviour
     
     [Header("Game Datas")]
     [SerializeField] private GemCollectionData _gameGemCollection = null;
-
-    [Header("Game Variables")] 
+    
+    [Header("Gem")]
     [SerializeField] private float _gemMoveSpeed = 10f;
+    [SerializeField] private float _gemMatchAnimTime = 0.5f;
+    [SerializeField] private float _gemSwitchTime = 0.5f;
+    
+    [Header("Board")]
+    [SerializeField] private float _boardDelayAfterMatch = 1f;
     
     #region Properties
 
+    // Game Data
     public GemCollectionData gemeGemCollection => _gameGemCollection;
     
+    // Gem Variables
     public float gemMoveSpeed => _gemMoveSpeed;
+    public float gemMatchAnimTime => _gemMatchAnimTime;
+    public float gemSwitchTime => _gemSwitchTime;
+    
+    // Board Variables
+    public float boardDelayAfterMatch => _boardDelayAfterMatch;
 
     #endregion
     

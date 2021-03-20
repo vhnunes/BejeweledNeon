@@ -11,19 +11,19 @@ namespace BJW
         
         #region Variables
 
-        [SerializeField] private bool _canStartWitchMatches = false;
-        
         private BoardState _boardState = BoardState.Playing;
-        [SerializeField] private int _rowSize, _collumSize;
         
+        [SerializeField] private bool _canStartWitchMatches = false;
+        [SerializeField] private int _rowSize, _collumSize;
+
+        #region Gem Data
+
         private GemCollectionData _gemCollection;
         private GemData[] _gemsDataAvaliable;
         private Gem[] _gemsInGame;
+
+        #endregion
         private List<GemMatch> _gemMatches = new List<GemMatch>();
-        
-        private float _gemMatchAnimTime = 0.5f;
-        private float _gemSwitchTime = 0.5f;
-        private float _boardAfterMatchDelay = 1f;
 
         #region Properties
 
@@ -145,7 +145,7 @@ namespace BJW
 
             var mainRoutine = GameManager.instance.StartCoroutine(MatchGemRoutine(allGemsMatch));
             yield return mainRoutine;
-            yield return new WaitForSeconds(_boardAfterMatchDelay);
+            yield return new WaitForSeconds(_gameManager.boardDelayAfterMatch);
             
             // Do all other matches that can have in board.
             var boardMatches = GetAllMatchsInBoard();
@@ -167,7 +167,7 @@ namespace BJW
 
                 // Wait for any match to stop, (all matches have the same time)
                 yield return otherFirstRoutine;
-                yield return new WaitForSeconds(_boardAfterMatchDelay);
+                yield return new WaitForSeconds(_gameManager.boardDelayAfterMatch);
                 boardMatches = GetAllMatchsInBoard();
             }
             
@@ -177,7 +177,7 @@ namespace BJW
         }
         private IEnumerator OnIlegalSwitchRoutine(Gem firstGem, Gem secondGem)
         {
-            var halfSwitchTime = _gemSwitchTime * 0.5f;
+            var halfSwitchTime = _gameManager.gemSwitchTime * 0.5f;
             
             yield return new WaitForSeconds(halfSwitchTime);
             SwitchGems(firstGem, secondGem);
@@ -375,7 +375,7 @@ namespace BJW
             {
                 gem.OnMatchStart();
             }
-            yield return new WaitForSeconds(_gemMatchAnimTime);
+            yield return new WaitForSeconds(_gameManager.gemMatchAnimTime);
             
             // On Match
             DoMatch(match);
