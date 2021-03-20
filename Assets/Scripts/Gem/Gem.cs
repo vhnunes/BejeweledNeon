@@ -108,4 +108,9 @@ namespace BJW
 
         #endregion
     }
+    
+    public enum GemType
+    {
+        Normal, Rare, SuperRare
+    }
 }

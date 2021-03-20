@@ -604,4 +604,9 @@ namespace BJW
         #endregion
         
     }
+    
+    public enum BoardState
+    {
+        Waiting, Playing, GemSelected
+    }
 }
